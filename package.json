@@ -1,0 +1,38 @@
+{
+    "name": "squibble-backend",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "workspaces": [
+        "packages/*"
+    ],
+    "packageManager": "yarn@1.22.19",
+    "scripts": {
+        "bootstrap": "yarn run clean && yarn install && yarn run build",
+        "clean": "turbo run clean && rm -rf node_modules yarn.lock",
+        "lint": "eslint --quiet '*/**/*.{js,ts,tsx}'",
+        "lint-fix": "eslint --quiet --fix '*/**/*.{js,ts,tsx}'",
+        "build": "turbo run build",
+        "test": "yarn run lint && turbo run test",
+        "prepare": "husky install",
+        "dev:squibble-graphql": "turbo run --filter=squibble-dynamodb dev"
+    },
+    "dependencies": {
+        "graphql": "^16.9.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.6.0",
+        "@types/eslint__js": "^8.42.3",
+        "@types/node": "^20.14.10",
+        "copy-webpack-plugin": "^12.0.2",
+        "eslint": "^9.6.0",
+        "husky": "^9.0.11",
+        "prettier": "^3.3.2",
+        "ts-loader": "^9.5.1",
+        "turbo": "latest",
+        "typescript": "^5.5.3",
+        "typescript-eslint": "^7.16.0",
+        "webpack": "^5.92.1",
+        "webpack-cli": "^5.1.4"
+    }
+}

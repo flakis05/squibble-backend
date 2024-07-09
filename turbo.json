@@ -1,0 +1,17 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "clean": {},
+        "build": {},
+        "test": {},
+        "dev": {
+          "dependsOn": ["build"]
+        },
+        "graphql-schema#build": {
+          "dependsOn": ["appsync-graphql#build", "squibble-graphql#build"]
+        },
+        "squibble-dynamodb#build": {
+          "dependsOn": ["graphql-schema#build"]
+        }
+    }
+}

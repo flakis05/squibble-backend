@@ -1,0 +1,22 @@
+{
+    "name": "squibble-dynamodb",
+    "version": "1.0.0",
+    "private": true,
+    "main": "dist/index.js",
+    "scripts": {
+        "clean": "rm -rf dist node_modules generated",
+        "dev": "node dist/index.js",
+        "generate": "yarn run schema:generate",
+        "schema:generate": "generate-schema",
+        "test": "tsc",
+        "build": "yarn run generate && yarn run build:bundle",
+        "build:bundle": "webpack --mode development"
+    },
+    "devDependencies": {
+      "graphql-schema": "*",
+      "nodemon": "^3.1.4"
+    },
+    "dependencies": {
+        "@apollo/server": "^4.10.4"
+    }
+  }

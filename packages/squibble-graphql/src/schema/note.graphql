@@ -1,0 +1,11 @@
+type Note implements Node {
+    id: ID!
+    dateCreated: AWSDateTime!
+    dateModified: AWSDateTime!
+    title: String
+    content: String!
+}
+
+type Query {
+    notes: [Note!]!
+}

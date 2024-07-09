@@ -1,0 +1,12 @@
+{
+    "name": "squibble-graphql",
+    "version": "1.0.0",
+    "private": true,
+    "main": "dist/src/index.js",
+    "scripts": {
+      "clean": "rm -rf node_modules dist",
+      "build": "yarn run build:bundle",
+      "build:bundle": "webpack --config ./webpack.config.js"
+    }
+  }
+  
