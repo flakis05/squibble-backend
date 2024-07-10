@@ -13,10 +13,11 @@
         "build:bundle": "webpack --mode development"
     },
     "devDependencies": {
-      "graphql-schema": "*",
-      "nodemon": "^3.1.4"
+        "graphql-schema": "*",
+        "nodemon": "^3.1.4"
     },
     "dependencies": {
-        "@apollo/server": "^4.10.4"
+        "@apollo/server": "^4.10.4",
+        "dataloader": "^2.2.2"
     }
-  }
+}
