@@ -18,6 +18,8 @@
     },
     "dependencies": {
         "@apollo/server": "^4.10.4",
+        "@aws-sdk/client-dynamodb": "^3.613.0",
+        "@aws-sdk/lib-dynamodb": "^3.613.0",
         "dataloader": "^2.2.2"
     }
 }
