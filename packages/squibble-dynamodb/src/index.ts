@@ -8,6 +8,7 @@ import { NoteFactory } from './graphql/note/api/factory/NoteFactory';
 import { DynamoDBClientWrapper } from './dynamodb/wrapper/DynamoDbClientWrapper';
 import { documentClient } from './dynamodb/client';
 import { Table } from './dynamodb/model/Table';
+import { initializeDynamoDbTable } from './dynamodb/setup/table-initializer';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -30,6 +31,10 @@ const resolvers = {
 };
 
 const start = async () => {
+    if(process.env.NODE_ENV === 'development') {
+        await initializeDynamoDbTable(Table.BASE)
+    }
+
     const server = new ApolloServer({
         typeDefs,
         resolvers,

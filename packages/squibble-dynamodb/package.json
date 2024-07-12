@@ -6,6 +6,8 @@
     "scripts": {
         "clean": "rm -rf dist node_modules generated",
         "dev": "node dist/index.js",
+        "dev-dynamo-db-start": "docker-compose -f dynamodb-local.yaml up",
+        "dev-dynamo-db-stop": "docker-compose -f dynamodb-local.yaml down",
         "generate": "yarn run schema:generate",
         "schema:generate": "generate-schema",
         "test": "tsc",
