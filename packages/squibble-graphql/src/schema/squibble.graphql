@@ -1,5 +1,4 @@
 interface Node {
-  id: ID!
-  dateCreated: AWSDateTime!
-  dateModified: AWSDateTime!
+  createdAt: AWSDateTime!
+  modifiedAt: AWSDateTime!
 }

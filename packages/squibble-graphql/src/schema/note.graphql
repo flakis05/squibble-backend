@@ -1,11 +1,25 @@
 type Note implements Node {
-    id: ID!
-    dateCreated: AWSDateTime!
-    dateModified: AWSDateTime!
+    noteId: ID!
+    createdAt: AWSDateTime!
+    modifiedAt: AWSDateTime!
     title: String
     content: String!
 }
 
+input CreateNoteInput {
+    title: String
+    content: String!
+}
+
+type CreateNoteOutput {
+    note: Note!
+}
+
 type Query {
+    note(noteId: ID!): Note
     notes: [Note!]!
+}
+
+type Mutation {
+    createNote(input: CreateNoteInput!): CreateNoteOutput!
 }
