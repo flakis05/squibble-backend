@@ -1,4 +1,3 @@
-import { Attribute } from "./Attribute";
-import { SquibbleItem } from "./SquibbleItem";
+import { Attribute, ItemSchema } from "./Attribute";
 
-export type BaseKeys = Pick<SquibbleItem, Attribute.PK | Attribute.SK>;
+export type BaseKeys = Pick<ItemSchema, Attribute.PK | Attribute.SK>;
