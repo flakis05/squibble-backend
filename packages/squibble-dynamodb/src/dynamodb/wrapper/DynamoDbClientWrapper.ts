@@ -8,7 +8,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 
 import { ItemNotFoundException } from '../exceptions/ItemNotFoundException';
-import { DynamoDbItem } from './model/DynamoDbItem';
+import { DynamoDbItem } from '../model/DynamoDbItem';
 
 export type Key = Record<string, NativeAttributeValue>;
 
