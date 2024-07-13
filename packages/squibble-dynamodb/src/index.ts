@@ -10,6 +10,10 @@ import { documentClient } from './dynamodb/client';
 import { Table } from './dynamodb/model/Table';
 import { initializeDynamoDbTable } from './dynamodb/setup/table-initializer';
 import { KeySupplier } from './graphql/util/KeySupplier';
+import { MutationResolver } from './graphql/MutationResolver';
+import { CreateNoteInput, CreateNoteOutput } from './graphql/note/api/model';
+import { CreateNoteMutationCall } from './graphql/note/mutation/CreateNoteMutationCall';
+import { CreateNoteHandler } from './graphql/note/handler/CreateNoteHandler';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -19,8 +23,11 @@ const keySupplier = new KeySupplier();
 const noteFactory = new NoteFactory(keySupplier);
 
 const getNoteHandler = new GetNoteHandler(clientWrapper, noteFactory);
+const createNoteHandler = new CreateNoteHandler(clientWrapper, noteFactory);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
+const createNoteMutationCall = new CreateNoteMutationCall(createNoteHandler);
+const createNoteMutationResolver = new MutationResolver<CreateNoteInput, CreateNoteOutput>(createNoteMutationCall);
 
 const resolvers = {
     Query: {
@@ -28,6 +35,9 @@ const resolvers = {
         notes: () => {
             return [{ id: 1 }];
         }
+    },
+    Mutation: {
+        createNote: createNoteMutationResolver.resolve
     }
 };
 
