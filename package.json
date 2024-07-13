@@ -15,7 +15,9 @@
         "build": "turbo run build",
         "test": "yarn run lint && turbo run test",
         "prepare": "husky install",
-        "dev:squibble-graphql": "turbo run --filter=squibble-dynamodb dev"
+        "dev:squibble-graphql": "turbo run --filter=squibble-dynamodb dev",
+        "docker:squibble-dynamodb-start": "turbo run --filter=squibble-dynamodb dynamodb-start"
+        
     },
     "dependencies": {
         "graphql": "^16.9.0"

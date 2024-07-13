@@ -10,3 +10,7 @@ export interface CreatedModifiedAt {
 }
 
 export type Errorable<T> = T | Error;
+
+export type WithDateNow<T> = T & {
+    dateNow: string;
+};

@@ -9,7 +9,7 @@ interface NoteData {
 
 export type NoteEntity = NoteId & CreatedModifiedAt & NoteData;
 
-export type CreateNoteInput = NoteId & NoteData;
+export type CreateNoteInput = NoteData;
 
 export interface CreateNoteOutput {
     note: NoteEntity;

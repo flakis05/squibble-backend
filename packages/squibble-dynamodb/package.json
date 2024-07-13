@@ -6,8 +6,8 @@
     "scripts": {
         "clean": "rm -rf dist node_modules generated",
         "dev": "node dist/index.js",
-        "dev-dynamo-db-start": "docker-compose -f dynamodb-local.yaml up",
-        "dev-dynamo-db-stop": "docker-compose -f dynamodb-local.yaml down",
+        "dynamodb-start": "docker-compose -f dynamodb-local.yaml up",
+        "dynamodb-stop": "docker-compose -f dynamodb-local.yaml down",
         "generate": "yarn run schema:generate",
         "schema:generate": "generate-schema",
         "test": "tsc",
@@ -15,6 +15,7 @@
         "build:bundle": "webpack --mode development"
     },
     "devDependencies": {
+        "@types/uuid": "^10.0.0",
         "graphql-schema": "*",
         "nodemon": "^3.1.4"
     },
@@ -22,6 +23,7 @@
         "@apollo/server": "^4.10.4",
         "@aws-sdk/client-dynamodb": "^3.613.0",
         "@aws-sdk/lib-dynamodb": "^3.613.0",
-        "dataloader": "^2.2.2"
+        "dataloader": "^2.2.2",
+        "uuid": "^10.0.0"
     }
 }

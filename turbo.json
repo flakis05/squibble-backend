@@ -4,6 +4,7 @@
         "clean": {},
         "build": {},
         "test": {},
+        "docker": {},
         "dev": {
           "dependsOn": ["build"]
         },
