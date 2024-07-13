@@ -11,7 +11,7 @@
         "bootstrap": "yarn run clean && yarn install && yarn run build",
         "clean": "turbo run clean && rm -rf node_modules yarn.lock",
         "lint": "eslint --quiet '*/**/*.{js,ts,tsx}'",
-        "lint-fix": "eslint --quiet --fix 'packages/squibble-dynamodb/**/*.{js,ts,tsx}'",
+        "lint-fix": "eslint --quiet --fix '*/**/*.{js,ts,tsx}'",
         "build": "turbo run build",
         "test": "yarn run lint && turbo run test",
         "prepare": "husky install",
