@@ -8,7 +8,6 @@ export enum Attribute {
     CONTENT = 'content'
 }
 
-
 export interface ItemSchema {
     [Attribute.PK]: string;
     [Attribute.SK]: string;

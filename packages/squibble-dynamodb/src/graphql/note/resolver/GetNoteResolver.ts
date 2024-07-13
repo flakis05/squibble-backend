@@ -11,7 +11,7 @@ export class GetNoteResolver implements Resolver<NoteEntity> {
 
     public resolve = async (_: any, args: any): Promise<NoteEntity> => {
         const input: GetNoteInput = {
-            noteId: args.noteId 
+            noteId: args.noteId
         };
         const output: GetNoteOutput = await this.handler.handle(input);
         return output.note;

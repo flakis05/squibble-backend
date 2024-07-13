@@ -1,4 +1,4 @@
-import { ID } from "../../api/model";
+import { ID } from '../../api/model';
 
 const KEY_SEPARATOR = '#';
 

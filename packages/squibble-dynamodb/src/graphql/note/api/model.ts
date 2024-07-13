@@ -1,6 +1,6 @@
-import { CreatedModifiedAt, Entity } from "../../../api/model";
+import { CreatedModifiedAt, Entity } from '../../../api/model';
 
-type NoteId = Entity<"noteId"> ;
+type NoteId = Entity<'noteId'>;
 
 interface NoteData {
     title?: string;
@@ -14,7 +14,6 @@ export type CreateNoteInput = NoteId & NoteData;
 export interface CreateNoteOutput {
     note: NoteEntity;
 }
-
 
 export type GetNoteInput = NoteId;
 export interface GetNoteOutput {

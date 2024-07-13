@@ -12,14 +12,13 @@ import { initializeDynamoDbTable } from './dynamodb/setup/table-initializer';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
-const clientWrapper = new DynamoDBClientWrapper( Table.BASE, documentClient);
+const clientWrapper = new DynamoDBClientWrapper(Table.BASE, documentClient);
 
 const noteFactory = new NoteFactory();
 
 const getNoteHandler = new GetNoteHandler(clientWrapper, noteFactory);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
-
 
 const resolvers = {
     Query: {
@@ -31,8 +30,8 @@ const resolvers = {
 };
 
 const start = async () => {
-    if(process.env.NODE_ENV === 'development') {
-        await initializeDynamoDbTable(Table.BASE)
+    if (process.env.NODE_ENV === 'development') {
+        await initializeDynamoDbTable(Table.BASE);
     }
 
     const server = new ApolloServer({

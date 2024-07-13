@@ -13,7 +13,7 @@ import { DynamoDbItem } from './model/DynamoDbItem';
 export type Key = Record<string, NativeAttributeValue>;
 
 export interface GetOutput<T extends DynamoDbItem> {
-    item: T
+    item: T;
 }
 
 export class DynamoDBClientWrapper {
@@ -24,11 +24,11 @@ export class DynamoDBClientWrapper {
         this.client = client;
     }
 
-    public get = async <T  extends DynamoDbItem> (key: Key): Promise<GetOutput<T>> => {
+    public get = async <T extends DynamoDbItem>(key: Key): Promise<GetOutput<T>> => {
         const input: GetCommandInput = {
             TableName: this.tableName,
             Key: key
-        }
+        };
         const { Item } = await this.client.send(new GetCommand(input));
 
         if (Item === undefined) {
@@ -39,11 +39,11 @@ export class DynamoDBClientWrapper {
         };
     };
 
-    public create = async <T  extends DynamoDbItem> (entity: T): Promise<void> => {
+    public create = async <T extends DynamoDbItem>(entity: T): Promise<void> => {
         const input: PutCommandInput = {
             TableName: this.tableName,
             Item: entity
-        }
+        };
         await this.client.send(new PutCommand(input));
     };
 }

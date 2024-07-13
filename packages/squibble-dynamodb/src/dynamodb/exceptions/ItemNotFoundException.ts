@@ -1,2 +1,1 @@
-export class ItemNotFoundException extends Error {
-}
+export class ItemNotFoundException extends Error {}
