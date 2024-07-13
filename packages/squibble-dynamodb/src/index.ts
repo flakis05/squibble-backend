@@ -4,7 +4,6 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { GetNoteResolver } from './graphql/note/resolver/GetNoteResolver';
 import { GetNoteHandler } from './graphql/note/handler/GetNoteHandler';
-import { NoteFactory } from './graphql/note/api/factory/NoteFactory';
 import { DynamoDBClientWrapper } from './dynamodb/wrapper/DynamoDbClientWrapper';
 import { documentClient } from './dynamodb/client';
 import { Table } from './dynamodb/model/Table';
@@ -20,10 +19,8 @@ const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 const clientWrapper = new DynamoDBClientWrapper(Table.BASE, documentClient);
 const keySupplier = new KeySupplier();
 
-const noteFactory = new NoteFactory(keySupplier);
-
-const getNoteHandler = new GetNoteHandler(clientWrapper, noteFactory);
-const createNoteHandler = new CreateNoteHandler(clientWrapper, noteFactory);
+const getNoteHandler = new GetNoteHandler(clientWrapper);
+const createNoteHandler = new CreateNoteHandler(clientWrapper, keySupplier);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
 const createNoteMutationCall = new CreateNoteMutationCall(createNoteHandler);
