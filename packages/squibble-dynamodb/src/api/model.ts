@@ -4,6 +4,10 @@ export type Entity<K extends string = 'id'> = {
     [P in K]: ID;
 };
 
+export interface CreatedAt {
+    createdAt: string;
+}
+
 export interface CreatedModifiedAt {
     createdAt: string;
     modifiedAt: string;

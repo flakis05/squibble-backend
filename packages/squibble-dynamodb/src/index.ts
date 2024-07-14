@@ -13,14 +13,19 @@ import { MutationResolver } from './graphql/mutation/MutationResolver';
 import { CreateNoteMutationCall } from './graphql/mutation/note/CreateNoteMutationCall';
 import { GetNoteResolver } from './graphql/resolver/note/GetNoteResolver';
 import { KeySupplier } from './graphql/util/KeySupplier';
+import { AdvancedDynamoDbClientWrapper } from './dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
+const maxBatchGetSize = 100;
+const maxBatchWriteSize = 25;
+
 const clientWrapper = new DynamoDBClientWrapper(Table.BASE, documentClient);
+const advancedlientWrapper = new AdvancedDynamoDbClientWrapper(documentClient, maxBatchGetSize, maxBatchWriteSize);
 const keySupplier = new KeySupplier();
 
 const getNoteHandler = new GetNoteHandler(clientWrapper);
-const createNoteHandler = new CreateNoteHandler(clientWrapper, keySupplier);
+const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
 const createNoteMutationCall = new CreateNoteMutationCall(createNoteHandler);
