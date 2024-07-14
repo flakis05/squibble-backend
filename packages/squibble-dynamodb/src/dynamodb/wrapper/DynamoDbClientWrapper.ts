@@ -8,7 +8,7 @@ import {
 
 import { ItemNotFoundException } from '../exceptions/ItemNotFoundException';
 import { DynamoDbItem } from '../model/DynamoDbItem';
-import { GenericKey } from '../key/GenericKey';
+import { BasePrimaryKey } from '../model/Key';
 
 export interface GetOutput<T extends DynamoDbItem> {
     item: T;
@@ -22,7 +22,7 @@ export class DynamoDBClientWrapper {
         this.client = client;
     }
 
-    public get = async <T extends DynamoDbItem>(key: GenericKey): Promise<GetOutput<T>> => {
+    public get = async <T extends DynamoDbItem>(key: BasePrimaryKey): Promise<GetOutput<T>> => {
         const input: GetCommandInput = {
             TableName: this.tableName,
             Key: key

@@ -9,11 +9,11 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { DynamoDbException } from '../exceptions/DynamoDbException';
 import { DynamoDbItem } from '../model/DynamoDbItem';
-import { GenericKey } from '../key/GenericKey';
+import { BasePrimaryKey } from '../model/Key';
 
 export interface BatchGetItem {
     table: string;
-    keys: GenericKey;
+    keys: BasePrimaryKey;
 }
 
 type BatchWriteType = 'delete' | 'put';
@@ -26,7 +26,7 @@ interface BatchWriteItemBase {
 
 interface BatchWriteDeleteItem extends BatchWriteItemBase {
     type: 'delete';
-    keys: GenericKey;
+    keys: BasePrimaryKey;
 }
 
 interface BatchWritePutItem extends BatchWriteItemBase {
@@ -52,7 +52,7 @@ export class AdvancedDynamoDbClientWrapper {
 
     public batchGet = async (items: Set<BatchGetItem>): Promise<BatchGetCommandOutput> => {
         this.verifyBatchGetSize(items);
-        const keys = this.createTableToGenericKeyRecord(items);
+        const keys = this.createTableToBasePrimaryKeyRecord(items);
         const batchGetCommandInput = this.createBatchGetCommandInput(keys);
         return await this.client.send(new BatchGetCommand(batchGetCommandInput));
     };
@@ -76,8 +76,8 @@ export class AdvancedDynamoDbClientWrapper {
         }
     };
 
-    private createTableToGenericKeyRecord = (items: Set<BatchGetItem>): Record<string, Set<GenericKey>> => {
-        const result: Record<string, Set<GenericKey>> = {};
+    private createTableToBasePrimaryKeyRecord = (items: Set<BatchGetItem>): Record<string, Set<BasePrimaryKey>> => {
+        const result: Record<string, Set<BasePrimaryKey>> = {};
         items.forEach((item) => {
             if (result[item.table] === undefined) {
                 result[item.table] = new Set();
