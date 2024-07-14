@@ -4,11 +4,13 @@ type Note implements Node {
     modifiedAt: AWSDateTime!
     title: String
     content: String!
+    labels: [Label!]!
 }
 
 input CreateNoteInput {
     title: String
     content: String!
+    labels: [ExistingLabelInput!]
 }
 
 type CreateNoteOutput {

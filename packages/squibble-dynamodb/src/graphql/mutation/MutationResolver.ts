@@ -1,4 +1,4 @@
-import { Resolver } from '../apollo/Resolver';
+import { Resolver } from '../../apollo/Resolver';
 import { MutationCall } from './MutationCall';
 
 export class MutationResolver<InputType, OutputType> implements Resolver<OutputType> {

@@ -1,6 +1,6 @@
-import { MutationCall } from '../../MutationCall';
+import { CreateNoteInput, CreateNoteOutput } from '../../api/note/model';
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
-import { CreateNoteInput, CreateNoteOutput } from '../api/model';
+import { MutationCall } from '../MutationCall';
 
 export class CreateNoteMutationCall implements MutationCall<CreateNoteInput, CreateNoteOutput> {
     private handler: ApiCallHandler<CreateNoteInput, CreateNoteOutput>;

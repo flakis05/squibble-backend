@@ -1,11 +1,11 @@
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
-import { CreateNoteInput, CreateNoteOutput } from '../api/model';
-import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
-import { fromDynamoDbItem } from '../api/factory/note-factory';
 import { WithDateNow } from '../../../api/model';
 import { partitionKey, sortKey } from '../../../dynamodb/key/note-key-factory';
 import { KeySupplier } from '../../util/KeySupplier';
+import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
+import { fromDynamoDbItem } from '../../api/note/factory/note-factory';
+import { CreateNoteInput, CreateNoteOutput } from '../../api/note/model';
 
 export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, CreateNoteOutput> {
     private client: DynamoDBClientWrapper;

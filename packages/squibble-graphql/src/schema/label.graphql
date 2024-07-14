@@ -1,0 +1,9 @@
+type Label {
+    labelId: ID!
+    title: String!
+    createdAt: AWSDateTime!
+}
+
+input ExistingLabelInput {
+    labelId: ID!
+}

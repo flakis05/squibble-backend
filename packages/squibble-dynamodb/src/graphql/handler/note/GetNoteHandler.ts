@@ -1,9 +1,9 @@
-import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
-import { GetNoteInput, GetNoteOutput } from '../api/model';
 import { buildBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
-import { ApiCallHandler } from '../../handler/ApiCallHandler';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
-import { fromDynamoDbItem } from '../api/factory/note-factory';
+import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
+import { fromDynamoDbItem } from '../../api/note/factory/note-factory';
+import { GetNoteInput, GetNoteOutput } from '../../api/note/model';
+import { ApiCallHandler } from '../ApiCallHandler';
 
 export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutput> {
     private client: DynamoDBClientWrapper;

@@ -1,6 +1,6 @@
 import { Resolver } from '../../../apollo/Resolver';
+import { NoteEntity, GetNoteInput, GetNoteOutput } from '../../api/note/model';
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
-import { NoteEntity, GetNoteInput, GetNoteOutput } from '../api/model';
 
 export class GetNoteResolver implements Resolver<NoteEntity> {
     private handler: ApiCallHandler<GetNoteInput, GetNoteOutput>;

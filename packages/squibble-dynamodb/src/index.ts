@@ -2,17 +2,17 @@ import fs from 'fs';
 
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import { GetNoteResolver } from './graphql/note/resolver/GetNoteResolver';
-import { GetNoteHandler } from './graphql/note/handler/GetNoteHandler';
-import { DynamoDBClientWrapper } from './dynamodb/wrapper/DynamoDbClientWrapper';
 import { documentClient } from './dynamodb/client';
 import { Table } from './dynamodb/model/Table';
 import { initializeDynamoDbTable } from './dynamodb/setup/table-initializer';
+import { DynamoDBClientWrapper } from './dynamodb/wrapper/DynamoDbClientWrapper';
+import { CreateNoteInput, CreateNoteOutput } from './graphql/api/note/model';
+import { CreateNoteHandler } from './graphql/handler/note/CreateNoteHandler';
+import { GetNoteHandler } from './graphql/handler/note/GetNoteHandler';
+import { MutationResolver } from './graphql/mutation/MutationResolver';
+import { CreateNoteMutationCall } from './graphql/mutation/note/CreateNoteMutationCall';
+import { GetNoteResolver } from './graphql/resolver/note/GetNoteResolver';
 import { KeySupplier } from './graphql/util/KeySupplier';
-import { MutationResolver } from './graphql/MutationResolver';
-import { CreateNoteInput, CreateNoteOutput } from './graphql/note/api/model';
-import { CreateNoteMutationCall } from './graphql/note/mutation/CreateNoteMutationCall';
-import { CreateNoteHandler } from './graphql/note/handler/CreateNoteHandler';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
