@@ -2,15 +2,13 @@ import {
     DynamoDBDocumentClient,
     GetCommand,
     GetCommandInput,
-    NativeAttributeValue,
     PutCommand,
     PutCommandInput
 } from '@aws-sdk/lib-dynamodb';
 
 import { ItemNotFoundException } from '../exceptions/ItemNotFoundException';
 import { DynamoDbItem } from '../model/DynamoDbItem';
-
-export type Key = Record<string, NativeAttributeValue>;
+import { GenericKey } from '../key/GenericKey';
 
 export interface GetOutput<T extends DynamoDbItem> {
     item: T;
@@ -24,7 +22,7 @@ export class DynamoDBClientWrapper {
         this.client = client;
     }
 
-    public get = async <T extends DynamoDbItem>(key: Key): Promise<GetOutput<T>> => {
+    public get = async <T extends DynamoDbItem>(key: GenericKey): Promise<GetOutput<T>> => {
         const input: GetCommandInput = {
             TableName: this.tableName,
             Key: key

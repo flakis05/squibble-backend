@@ -1,5 +1,7 @@
+import { NativeAttributeValue } from '@aws-sdk/lib-dynamodb';
 import { ID } from '../../api/model';
-import { Key } from '../wrapper/DynamoDbClientWrapper';
+
+type Key = Record<string, NativeAttributeValue>;
 
 export interface GenericKey extends Key {
     pk: ID;
