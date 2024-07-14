@@ -1,7 +1,7 @@
 import { Attribute, ItemSchema } from './Attribute';
-import { BaseKeys } from './Key';
+import { BasePrimaryKey } from './Key';
 
-type NoteTableKeys = BaseKeys;
+type NoteTableKeys = BasePrimaryKey;
 type NoteRequiredItemKeys = Pick<
     ItemSchema,
     Attribute.NOTE_ID | Attribute.CREATED_AT | Attribute.MODIFIED_AT | Attribute.CONTENT
