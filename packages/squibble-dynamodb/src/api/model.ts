@@ -8,6 +8,10 @@ export interface CreatedAt {
     createdAt: string;
 }
 
+export interface AddedAt {
+    addedAt: string;
+}
+
 export interface DeletedAt {
     deletedAt?: string;
 }

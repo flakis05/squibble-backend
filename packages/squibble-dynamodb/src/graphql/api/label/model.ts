@@ -10,7 +10,7 @@ interface LabelData {
 
 export type LabelEntity = LabelId & CreatedAt & LabelData;
 
-export type ExistingLabelInput = LabelId;
+export type CreateNoteWithLabelInput = LabelId & Pick<LabelData, 'color'>;
 
 export type CreateLabelInput = LabelData;
 

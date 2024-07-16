@@ -10,7 +10,7 @@ type Note implements Node {
 input CreateNoteInput {
     title: String
     content: String!
-    labels: [ExistingLabelInput!]
+    labels: [CreateNoteWithLabelInput!]
 }
 
 type CreateNoteOutput {

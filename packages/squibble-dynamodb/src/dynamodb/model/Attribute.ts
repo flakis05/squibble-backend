@@ -1,4 +1,5 @@
 import { Color } from './Color';
+import { LabelsAttributeValue } from './Label';
 
 export enum Attribute {
     PK = 'pk',
@@ -10,7 +11,8 @@ export enum Attribute {
     LABEL_ID = 'labelId',
     TITLE = 'title',
     CONTENT = 'content',
-    COLOR = 'color'
+    COLOR = 'color',
+    LABELS = 'labels'
 }
 
 export interface ItemSchema {
@@ -24,4 +26,5 @@ export interface ItemSchema {
     [Attribute.TITLE]: string;
     [Attribute.CONTENT]: string;
     [Attribute.COLOR]: Color;
+    [Attribute.LABELS]: LabelsAttributeValue;
 }

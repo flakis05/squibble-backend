@@ -5,8 +5,9 @@ type Label {
     color: Color!
 }
 
-input ExistingLabelInput {
+input CreateNoteWithLabelInput {
     labelId: ID!
+    color: Color
 }
 
 input CreateLabelInput {

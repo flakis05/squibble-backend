@@ -10,6 +10,8 @@ import { NoteLabelDynamoDbItem } from '../../../dynamodb/model/NoteLabel';
 import { AdvancedDynamoDbClientWrapper, BatchWriteItem } from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { DynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
 import { Table } from '../../../dynamodb/model/Table';
+import { LabelsAttributeValue } from '../../../dynamodb/model/Label';
+import { CreateNoteWithLabelInput } from '../../api/label/model';
 
 export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, CreateNoteOutput> {
     private client: AdvancedDynamoDbClientWrapper;
@@ -38,8 +40,25 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
             modifiedAt: input.dateNow,
             noteId: input.noteId,
             title: input.title,
-            content: input.content
+            content: input.content,
+            labels: this.createNoteLabelsDynamoDbItem(input)
         };
+    };
+
+    private createNoteLabelsDynamoDbItem = (
+        input: WithDateNow<Pick<CreateNoteInput, 'labels'>>
+    ): LabelsAttributeValue => {
+        if (input.labels === undefined) {
+            return {};
+        }
+        return input.labels.reduce((acc, curr: CreateNoteWithLabelInput) => {
+            acc[curr.labelId] = {
+                labelId: curr.labelId,
+                color: curr.color,
+                addedAt: input.dateNow
+            };
+            return acc;
+        }, {} as LabelsAttributeValue);
     };
 
     private createNoteLabelDynamoDbItems = (
