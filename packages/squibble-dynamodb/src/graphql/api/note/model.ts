@@ -1,4 +1,4 @@
-import { CreatedModifiedAt, Entity } from '../../../api/model';
+import { CreatedModifiedAt, DeletedAt, Entity } from '../../../api/model';
 import { ExistingLabelInput, LabelEntity } from '../label/model';
 
 export type NoteId = Entity<'noteId'>;
@@ -9,17 +9,21 @@ interface NoteData {
     labels?: LabelEntity[];
 }
 
-export type NoteEntity = NoteId & CreatedModifiedAt & NoteData;
-
-export type CreateNoteInput = Omit<NoteData, 'labels'> & {
-    labels?: ExistingLabelInput[];
-};
-
-export interface CreateNoteOutput {
-    note: NoteEntity;
-}
+export type NoteEntity = NoteId & CreatedModifiedAt & DeletedAt & NoteData;
 
 export type GetNoteInput = NoteId;
 export interface GetNoteOutput {
     note: NoteEntity;
+}
+
+export type CreateNoteInput = Omit<NoteData, 'labels'> & {
+    labels?: ExistingLabelInput[];
+};
+export interface CreateNoteOutput {
+    note: NoteEntity;
+}
+
+export type DeleteNoteInput = NoteId;
+export interface DeleteNoteOutput {
+    success: boolean;
 }

@@ -6,6 +6,6 @@ type NoteRequiredItemKeys = Pick<
     ItemSchema,
     Attribute.NOTE_ID | Attribute.CREATED_AT | Attribute.MODIFIED_AT | Attribute.CONTENT
 >;
-type NoteOptionalItemKeys = Partial<Pick<ItemSchema, Attribute.TITLE>>;
+type NoteOptionalItemKeys = Partial<Pick<ItemSchema, Attribute.TITLE | Attribute.DELETED_AT>>;
 
 export type NoteDynamoDbItem = NoteTableKeys & NoteRequiredItemKeys & NoteOptionalItemKeys;

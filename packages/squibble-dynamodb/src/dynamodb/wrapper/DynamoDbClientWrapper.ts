@@ -3,12 +3,15 @@ import {
     GetCommand,
     GetCommandInput,
     PutCommand,
-    PutCommandInput
+    PutCommandInput,
+    UpdateCommand,
+    UpdateCommandInput
 } from '@aws-sdk/lib-dynamodb';
 
 import { ItemNotFoundException } from '../exceptions/ItemNotFoundException';
 import { DynamoDbItem } from '../model/DynamoDbItem';
 import { BasePrimaryKey } from '../model/Key';
+import { createUpdateExpression } from '../util/expression-factory';
 
 export interface GetOutput<T extends DynamoDbItem> {
     item: T;
@@ -43,5 +46,22 @@ export class DynamoDBClientWrapper {
             Item: entity
         };
         await this.client.send(new PutCommand(input));
+    };
+
+    public update = async <T extends DynamoDbItem>(
+        key: BasePrimaryKey,
+        entity: Omit<T, keyof BasePrimaryKey>
+    ): Promise<void> => {
+        console.log(key, entity);
+        const { UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues } =
+            createUpdateExpression(entity);
+        const input: UpdateCommandInput = {
+            TableName: this.tableName,
+            Key: key,
+            UpdateExpression,
+            ExpressionAttributeNames,
+            ExpressionAttributeValues
+        };
+        await this.client.send(new UpdateCommand(input));
     };
 }

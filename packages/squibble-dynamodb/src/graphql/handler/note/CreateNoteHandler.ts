@@ -1,10 +1,7 @@
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
 import { WithDateNow } from '../../../api/model';
-import { partitionKey as notePartitionKey, sortKey as noteSortKey } from '../../../dynamodb/key/note-key-factory';
-import {
-    partitionKey as noteLabelPartitionKey,
-    sortKey as noteLabelSortKey
-} from '../../../dynamodb/key/note-label-key-factory';
+import { buildBasePrimaryKey as buildNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import { buildBasePrimaryKey as buildNoteLabelBasePrimaryKey } from '../../../dynamodb/key/note-label-key-factory';
 import { KeySupplier } from '../../util/KeySupplier';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { fromDynamoDbItem } from '../../api/note/factory/note-factory';
@@ -36,8 +33,7 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
 
     private createNoteDynamoDbItem = (input: WithDateNow<CreateNoteInput & NoteId>): NoteDynamoDbItem => {
         return {
-            pk: notePartitionKey(),
-            sk: noteSortKey(input.noteId),
+            ...buildNoteBasePrimaryKey(input.noteId),
             createdAt: input.dateNow,
             modifiedAt: input.dateNow,
             noteId: input.noteId,
@@ -53,8 +49,7 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
             return [];
         }
         return input.labels.map((label) => ({
-            pk: noteLabelPartitionKey(),
-            sk: noteLabelSortKey(input.noteId, label.labelId),
+            ...buildNoteLabelBasePrimaryKey(input.noteId, label.labelId),
             createdAt: input.dateNow,
             noteId: input.noteId,
             labelId: label.labelId

@@ -3,6 +3,7 @@ export enum Attribute {
     SK = 'sk',
     CREATED_AT = 'createdAt',
     MODIFIED_AT = 'modifiedAt',
+    DELETED_AT = 'deletedAt',
     NOTE_ID = 'noteId',
     LABEL_ID = 'labelId',
     TITLE = 'title',
@@ -14,6 +15,7 @@ export interface ItemSchema {
     [Attribute.SK]: string;
     [Attribute.CREATED_AT]: string;
     [Attribute.MODIFIED_AT]: string;
+    [Attribute.DELETED_AT]: string;
     [Attribute.NOTE_ID]: string;
     [Attribute.LABEL_ID]: string;
     [Attribute.TITLE]: string;
