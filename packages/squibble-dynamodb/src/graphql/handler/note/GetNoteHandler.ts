@@ -1,4 +1,4 @@
-import { buildBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import { createBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { fromDynamoDbItem } from '../../api/note/factory/note-factory';
@@ -11,7 +11,7 @@ export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutpu
         this.client = client;
     }
     public handle = async (input: GetNoteInput): Promise<GetNoteOutput> => {
-        const key = buildBasePrimaryKey(input.noteId);
+        const key = createBasePrimaryKey(input.noteId);
         const { item } = await this.client.get<NoteDynamoDbItem>(key);
 
         const note = fromDynamoDbItem(item);

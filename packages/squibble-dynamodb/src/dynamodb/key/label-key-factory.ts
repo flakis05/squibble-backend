@@ -5,7 +5,7 @@ import { createKey } from './key-factory';
 export const partitionKey = (): ID => createKey('user', '<user_id>', 'labels');
 export const sortKey = (labelId: ID): ID => createKey('user', '<user_id>', 'label', labelId);
 
-export const buildBasePrimaryKey = (labelId: ID): BasePrimaryKey => ({
+export const createBasePrimaryKey = (labelId: ID): BasePrimaryKey => ({
     pk: partitionKey(),
     sk: sortKey(labelId)
 });
