@@ -52,7 +52,6 @@ export class DynamoDBClientWrapper {
         key: BasePrimaryKey,
         entity: Omit<T, keyof BasePrimaryKey>
     ): Promise<void> => {
-        console.log(key, entity);
         const { UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues } =
             createUpdateExpression(entity);
         const input: UpdateCommandInput = {

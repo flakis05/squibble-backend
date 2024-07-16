@@ -2,3 +2,7 @@ interface Node {
   createdAt: AWSDateTime!
   modifiedAt: AWSDateTime!
 }
+
+enum Color {
+  TEAL
+}

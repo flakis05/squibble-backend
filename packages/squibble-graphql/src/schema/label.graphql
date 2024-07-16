@@ -2,8 +2,22 @@ type Label {
     labelId: ID!
     title: String!
     createdAt: AWSDateTime!
+    color: Color!
 }
 
 input ExistingLabelInput {
     labelId: ID!
+}
+
+input CreateLabelInput {
+    title: String!
+    color: Color!
+}
+
+type CreateLabelOutput {
+    label: Label!
+}
+
+type Mutation {
+    createLabel(input: CreateLabelInput!): CreateLabelOutput!
 }

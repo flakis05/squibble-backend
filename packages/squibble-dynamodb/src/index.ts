@@ -16,6 +16,10 @@ import { KeySupplier } from './graphql/util/KeySupplier';
 import { AdvancedDynamoDbClientWrapper } from './dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { DeleteNoteHandler } from './graphql/handler/note/DeleteNoteHandler';
 import { DeleteNoteMutationCall } from './graphql/mutation/note/DeleteNoteMutationCall';
+import { CreateLabelInput, CreateLabelOutput } from './graphql/api/label/model';
+import { CreateLabelHandler } from './graphql/handler/label/CreateLabelHandler';
+import { CreateLabelMutationCall } from './graphql/mutation/label/CreateLabelMutationCall';
+import { Color } from './dynamodb/model/Color';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -28,12 +32,15 @@ const keySupplier = new KeySupplier();
 
 const getNoteHandler = new GetNoteHandler(clientWrapper);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
+const createLabelHandler = new CreateLabelHandler(clientWrapper, keySupplier);
 const deleteNoteHandler = new DeleteNoteHandler(clientWrapper);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
 
 const createNoteMutationCall = new CreateNoteMutationCall(createNoteHandler);
 const createNoteMutationResolver = new MutationResolver<CreateNoteInput, CreateNoteOutput>(createNoteMutationCall);
+const createLabelMutationCall = new CreateLabelMutationCall(createLabelHandler);
+const createLabelMutationResolver = new MutationResolver<CreateLabelInput, CreateLabelOutput>(createLabelMutationCall);
 const deleteNoteMutationCall = new DeleteNoteMutationCall(deleteNoteHandler);
 const deleteNoteMutationResolver = new MutationResolver<DeleteNoteInput, DeleteNoteOutput>(deleteNoteMutationCall);
 
@@ -46,8 +53,10 @@ const resolvers = {
     },
     Mutation: {
         createNote: createNoteMutationResolver.resolve,
+        createLabel: createLabelMutationResolver.resolve,
         deleteNote: deleteNoteMutationResolver.resolve
-    }
+    },
+    Color
 };
 
 const start = async () => {

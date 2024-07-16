@@ -1,3 +1,5 @@
+import { Color } from './Color';
+
 export enum Attribute {
     PK = 'pk',
     SK = 'sk',
@@ -7,7 +9,8 @@ export enum Attribute {
     NOTE_ID = 'noteId',
     LABEL_ID = 'labelId',
     TITLE = 'title',
-    CONTENT = 'content'
+    CONTENT = 'content',
+    COLOR = 'color'
 }
 
 export interface ItemSchema {
@@ -20,4 +23,5 @@ export interface ItemSchema {
     [Attribute.LABEL_ID]: string;
     [Attribute.TITLE]: string;
     [Attribute.CONTENT]: string;
+    [Attribute.COLOR]: Color;
 }
