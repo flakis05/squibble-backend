@@ -1,3 +1,4 @@
-import { Attribute, ItemSchema } from './Attribute';
+import { Attribute } from './Attribute';
+import { DynamoDbItem } from './DynamoDbItem';
 
-export type BasePrimaryKey = Pick<ItemSchema, Attribute.PK | Attribute.SK>;
+export type BasePrimaryKey = Required<Pick<DynamoDbItem, Attribute.PK | Attribute.SK>>;

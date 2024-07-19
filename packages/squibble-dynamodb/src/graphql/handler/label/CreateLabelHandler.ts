@@ -15,7 +15,6 @@ export class CreateLabelHandler implements ApiCallHandler<CreateLabelInput, Crea
         this.keySupplier = keySupplier;
     }
     public handle = async (input: CreateLabelInput): Promise<CreateLabelOutput> => {
-        console.log(input);
         const dateNow = new Date().toISOString();
         const labelId = this.keySupplier.get();
         const labelDynamoDbItem = this.createLabelDynamoDbItem({ dateNow, labelId, ...input });
