@@ -79,7 +79,7 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
         const batchWriteItems: BatchWriteItem[] = items.map((item) => ({
             table: Table.BASE,
             type: 'put',
-            keys: item
+            attributes: item
         }));
 
         return new BatchInputBuilder<BatchWriteItem>().addItems(batchWriteItems).build();

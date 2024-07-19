@@ -24,15 +24,15 @@ export class AdvancedDynamoDbClientWrapper {
 
     public batchGet = async (input: BatchInput<BatchGetItem>): Promise<BatchGetCommandOutput> => {
         this.verifyBatchGetSize(input.items);
-        const keys = this.createTableToBasePrimaryKeyRecord(input.items);
-        const batchGetCommandInput = this.createBatchGetCommandInput(keys);
+        const tableToKeys = this.createTableToBasePrimaryKeyRecord(input.items);
+        const batchGetCommandInput = this.createBatchGetCommandInput(tableToKeys);
         return await this.client.send(new BatchGetCommand(batchGetCommandInput));
     };
 
     public batchWrite = async (input: BatchInput<BatchWriteItem>): Promise<BatchWriteCommandOutput> => {
         this.verifyBatchWriteSize(input.items);
-        const keys = this.createTableToPutDeleteRecord(input.items);
-        const batchWriteCommandInput = this.createBatchWriteCommandInput(keys);
+        const tableToWriteTypeKeys = this.createTableToPutDeleteRecord(input.items);
+        const batchWriteCommandInput = this.createBatchWriteCommandInput(tableToWriteTypeKeys);
         return await this.client.send(new BatchWriteCommand(batchWriteCommandInput));
     };
 
@@ -54,7 +54,7 @@ export class AdvancedDynamoDbClientWrapper {
             if (result[item.table] === undefined) {
                 result[item.table] = [];
             }
-            result[item.table].push(item.keys);
+            result[item.table].push(item.attributes);
         });
         return result;
     };
@@ -79,25 +79,28 @@ export class AdvancedDynamoDbClientWrapper {
             if (result[item.table] === undefined) {
                 result[item.table] = this.createEmptyPutDeleteRecord();
             }
-            result[item.table][item.type].push(item.keys);
+            result[item.table][item.type].push(item.attributes);
         });
         return result;
     };
 
     private createBatchWriteCommandInput = (
-        tableToTypeKeys: Record<string, Record<BatchWriteType, (DynamoDbItem & BasePrimaryKey)[]>>
+        tableToWriteTypeKeys: Record<string, Record<BatchWriteType, (DynamoDbItem & BasePrimaryKey)[]>>
     ): BatchWriteCommandInput => {
         const requestItems: BatchWriteCommandInput['RequestItems'] = {};
-        Object.entries(tableToTypeKeys).forEach(([table, typeKeys]) => {
-            requestItems[table] = [...this.createPutRequestItems(typeKeys), ...this.createDeleteRequestItems(typeKeys)];
+        Object.entries(tableToWriteTypeKeys).forEach(([table, writeTypeKeys]) => {
+            requestItems[table] = [
+                ...this.createPutRequestItems(writeTypeKeys),
+                ...this.createDeleteRequestItems(writeTypeKeys)
+            ];
         });
         return {
             RequestItems: requestItems
         };
     };
 
-    private createDeleteRequestItems = (typeKeys: Record<Extract<BatchWriteType, 'delete'>, BasePrimaryKey[]>) => {
-        return Array.from(typeKeys.delete).map((keys) => ({
+    private createDeleteRequestItems = (writeTypeKeys: Record<Extract<BatchWriteType, 'delete'>, BasePrimaryKey[]>) => {
+        return Array.from(writeTypeKeys.delete).map((keys) => ({
             DeleteRequest: {
                 Key: keys
             }
@@ -105,9 +108,9 @@ export class AdvancedDynamoDbClientWrapper {
     };
 
     private createPutRequestItems = (
-        typeKeys: Record<Extract<BatchWriteType, 'put'>, (DynamoDbItem & BasePrimaryKey)[]>
+        writeTypeKeys: Record<Extract<BatchWriteType, 'put'>, (DynamoDbItem & BasePrimaryKey)[]>
     ) => {
-        return Array.from(typeKeys.put).map((keys) => ({
+        return Array.from(writeTypeKeys.put).map((keys) => ({
             PutRequest: {
                 Item: keys
             }

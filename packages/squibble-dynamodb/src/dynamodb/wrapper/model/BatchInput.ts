@@ -6,7 +6,7 @@ export type BatchWriteType = 'delete' | 'put';
 
 interface BatchItemBase {
     table: string;
-    keys: BasePrimaryKey;
+    attributes: BasePrimaryKey;
 }
 
 interface BatchWriteItemBase extends BatchItemBase {
@@ -15,12 +15,12 @@ interface BatchWriteItemBase extends BatchItemBase {
 
 interface BatchWriteDeleteItem extends BatchWriteItemBase {
     type: 'delete';
-    keys: BasePrimaryKey;
+    attributes: BasePrimaryKey;
 }
 
 interface BatchWritePutItem extends BatchWriteItemBase {
     type: 'put';
-    keys: DynamoDbItem & BasePrimaryKey;
+    attributes: DynamoDbItem & BasePrimaryKey;
 }
 
 export type BatchWriteItem = BatchWritePutItem | BatchWriteDeleteItem;
@@ -33,7 +33,7 @@ export interface BatchInput<T extends BatchItemBase> {
 export class BatchInputBuilder<T extends BatchItemBase> {
     readonly items: Record<string, T> = {};
     public addItem = (item: T): BatchInputBuilder<T> => {
-        this.items[this.createKey(item.keys)] = item;
+        this.items[this.createKey(item.attributes)] = item;
         return this;
     };
     public addItems = (items: T[]): BatchInputBuilder<T> => {
@@ -45,6 +45,6 @@ export class BatchInputBuilder<T extends BatchItemBase> {
             items: Object.values(this.items)
         };
     };
-    private createKey = (keys: BasePrimaryKey): string =>
-        `${Attribute.PK}#${keys[Attribute.PK]}#${Attribute.SK}#${keys[Attribute.SK]}`;
+    private createKey = (attributes: BasePrimaryKey): string =>
+        `${Attribute.PK}#${attributes[Attribute.PK]}#${Attribute.SK}#${attributes[Attribute.SK]}`;
 }
