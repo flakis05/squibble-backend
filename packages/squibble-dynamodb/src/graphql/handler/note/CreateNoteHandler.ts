@@ -7,11 +7,11 @@ import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { fromDynamoDbItem } from '../../api/note/factory/note-factory';
 import { CreateNoteInput, CreateNoteOutput, NoteId } from '../../api/note/model';
 import { NoteLabelDynamoDbItem } from '../../../dynamodb/model/NoteLabel';
-import { AdvancedDynamoDbClientWrapper, BatchWriteItem } from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
-import { DynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
+import { AdvancedDynamoDbClientWrapper } from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { Table } from '../../../dynamodb/model/Table';
 import { LabelsAttributeValue } from '../../../dynamodb/model/Label';
 import { CreateNoteWithLabelInput } from '../../api/label/model';
+import { BatchInput, BatchInputBuilder, BatchWriteItem } from '../../../dynamodb/wrapper/model/BatchInput';
 
 export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, CreateNoteOutput> {
     private client: AdvancedDynamoDbClientWrapper;
@@ -25,8 +25,8 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
         const noteId = this.keySupplier.get();
         const noteDynamoDbItem = this.createNoteDynamoDbItem({ dateNow, noteId, ...input });
         const noteLabelDynamoDbItems = this.createNoteLabelDynamoDbItems({ dateNow, noteId, ...input });
-        const batchWriteItems = this.createBatchWriteItems([noteDynamoDbItem, ...noteLabelDynamoDbItems]);
-        await this.client.batchWrite(batchWriteItems);
+        const batchInput = this.createBatchInput([noteDynamoDbItem, ...noteLabelDynamoDbItems]);
+        await this.client.batchWrite(batchInput);
 
         return {
             note: fromDynamoDbItem(noteDynamoDbItem)
@@ -75,13 +75,13 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
         }));
     };
 
-    private createBatchWriteItems = (items: DynamoDbItem[]): Set<BatchWriteItem> => {
+    private createBatchInput = (items: (NoteDynamoDbItem | NoteLabelDynamoDbItem)[]): BatchInput<BatchWriteItem> => {
         const batchWriteItems: BatchWriteItem[] = items.map((item) => ({
             table: Table.BASE,
             type: 'put',
             keys: item
         }));
 
-        return new Set(batchWriteItems);
+        return new BatchInputBuilder<BatchWriteItem>().addItems(batchWriteItems).build();
     };
 }
