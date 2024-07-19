@@ -2,9 +2,12 @@ import { AddedAt } from '../../api/model';
 import { Attribute, ItemSchema } from './Attribute';
 import { BasePrimaryKey } from './Key';
 
+type LabelsAttributeValueRequiredKeys = Pick<ItemSchema, Attribute.LABEL_ID>;
+type LabelsAttributeValueOptionalKeys = Partial<Pick<ItemSchema, Attribute.COLOR>>;
+
 export type LabelsAttributeValue = Record<
     string,
-    Pick<LabelDynamoDbItem, Attribute.LABEL_ID | Attribute.COLOR> & AddedAt
+    LabelsAttributeValueRequiredKeys & LabelsAttributeValueOptionalKeys & AddedAt
 >;
 
 type LabelTableKeys = BasePrimaryKey;
