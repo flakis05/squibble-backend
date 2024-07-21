@@ -1,6 +1,6 @@
-import { Attribute } from '../../model/Attribute';
 import { DynamoDbItem } from '../../model/DynamoDbItem';
 import { BasePrimaryKey } from '../../model/Key';
+import { createBatchItemId } from './util';
 
 export type BatchWriteType = 'delete' | 'put';
 
@@ -31,9 +31,9 @@ export interface BatchInput<T extends BatchItemBase> {
 }
 
 export class BatchInputBuilder<T extends BatchItemBase> {
-    readonly items: Record<string, T> = {};
+    private readonly items: Record<string, T> = {};
     public addItem = (item: T): BatchInputBuilder<T> => {
-        this.items[this.createKey(item.attributes)] = item;
+        this.items[createBatchItemId(item.attributes)] = item;
         return this;
     };
     public addItems = (items: T[]): BatchInputBuilder<T> => {
@@ -45,6 +45,4 @@ export class BatchInputBuilder<T extends BatchItemBase> {
             items: Object.values(this.items)
         };
     };
-    private createKey = (attributes: BasePrimaryKey): string =>
-        `${Attribute.PK}#${attributes[Attribute.PK]}#${Attribute.SK}#${attributes[Attribute.SK]}`;
 }

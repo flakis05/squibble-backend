@@ -4,13 +4,12 @@ import {
     BatchGetCommandOutput,
     BatchWriteCommand,
     BatchWriteCommandInput,
-    BatchWriteCommandOutput,
     DynamoDBDocumentClient
 } from '@aws-sdk/lib-dynamodb';
 import { DynamoDbException } from '../exceptions/DynamoDbException';
-import { DynamoDbItem } from '../model/DynamoDbItem';
 import { BasePrimaryKey } from '../model/Key';
 import { BatchInput, BatchGetItem, BatchWriteItem, BatchWriteType } from './model/BatchInput';
+import { BatchGetOutput, BatchItem, BatchOutputBuilder } from './model/BatchGetOutput';
 
 export class AdvancedDynamoDbClientWrapper {
     private client: DynamoDBDocumentClient;
@@ -29,11 +28,12 @@ export class AdvancedDynamoDbClientWrapper {
         return await this.client.send(new BatchGetCommand(batchGetCommandInput));
     };
 
-    public batchWrite = async (input: BatchInput<BatchWriteItem>): Promise<BatchWriteCommandOutput> => {
+    public batchWrite = async (input: BatchInput<BatchWriteItem>): Promise<BatchGetOutput> => {
         this.verifyBatchWriteSize(input.items);
         const tableToWriteTypeKeys = this.createTableToPutDeleteRecord(input.items);
         const batchWriteCommandInput = this.createBatchWriteCommandInput(tableToWriteTypeKeys);
-        return await this.client.send(new BatchWriteCommand(batchWriteCommandInput));
+        const batchWriteCommandOutput = await this.client.send(new BatchWriteCommand(batchWriteCommandInput));
+        return this.createBatchGetOutput(batchWriteCommandOutput);
     };
 
     private verifyBatchGetSize = (items: BatchGetItem[]) => {
@@ -73,8 +73,8 @@ export class AdvancedDynamoDbClientWrapper {
 
     private createTableToPutDeleteRecord = (
         items: BatchWriteItem[]
-    ): Record<string, Record<BatchWriteType, (DynamoDbItem & BasePrimaryKey)[]>> => {
-        const result: Record<string, Record<BatchWriteType, (DynamoDbItem & BasePrimaryKey)[]>> = {};
+    ): Record<string, Record<BatchWriteType, BatchItem[]>> => {
+        const result: Record<string, Record<BatchWriteType, BatchItem[]>> = {};
         items.forEach((item) => {
             if (result[item.table] === undefined) {
                 result[item.table] = this.createEmptyPutDeleteRecord();
@@ -85,7 +85,7 @@ export class AdvancedDynamoDbClientWrapper {
     };
 
     private createBatchWriteCommandInput = (
-        tableToWriteTypeKeys: Record<string, Record<BatchWriteType, (DynamoDbItem & BasePrimaryKey)[]>>
+        tableToWriteTypeKeys: Record<string, Record<BatchWriteType, BatchItem[]>>
     ): BatchWriteCommandInput => {
         const requestItems: BatchWriteCommandInput['RequestItems'] = {};
         Object.entries(tableToWriteTypeKeys).forEach(([table, writeTypeKeys]) => {
@@ -99,6 +99,13 @@ export class AdvancedDynamoDbClientWrapper {
         };
     };
 
+    private createBatchGetOutput = (response: BatchGetCommandOutput): BatchGetOutput => {
+        if (response['Responses'] === undefined) {
+            return new BatchOutputBuilder().build();
+        }
+        return new BatchOutputBuilder(response['Responses'] as Record<string, BatchItem[]>).build();
+    };
+
     private createDeleteRequestItems = (writeTypeKeys: Record<Extract<BatchWriteType, 'delete'>, BasePrimaryKey[]>) => {
         return Array.from(writeTypeKeys.delete).map((keys) => ({
             DeleteRequest: {
@@ -107,9 +114,7 @@ export class AdvancedDynamoDbClientWrapper {
         }));
     };
 
-    private createPutRequestItems = (
-        writeTypeKeys: Record<Extract<BatchWriteType, 'put'>, (DynamoDbItem & BasePrimaryKey)[]>
-    ) => {
+    private createPutRequestItems = (writeTypeKeys: Record<Extract<BatchWriteType, 'put'>, BatchItem[]>) => {
         return Array.from(writeTypeKeys.put).map((keys) => ({
             PutRequest: {
                 Item: keys
@@ -117,7 +122,7 @@ export class AdvancedDynamoDbClientWrapper {
         }));
     };
 
-    private createEmptyPutDeleteRecord = (): Record<BatchWriteType, (DynamoDbItem & BasePrimaryKey)[]> => ({
+    private createEmptyPutDeleteRecord = (): Record<BatchWriteType, BatchItem[]> => ({
         put: [],
         delete: []
     });
