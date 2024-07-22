@@ -8,7 +8,7 @@ import { AdvancedDynamoDbClientWrapper } from '../../../dynamodb/wrapper/Advance
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { fromDynamoDbItem as fromDynamoDbItemToNoteEntity } from '../../api/note/factory/note-factory';
 import { fromDynamoDbItem as fromDynamoDbItemToLabelEntity } from '../../api/label/factory/label-factory';
-import { GetNoteInput, GetNoteOutput } from '../../api/note/model';
+import { GetNoteInput, GetNoteOutput, NoteEntity } from '../../api/note/model';
 import { ApiCallHandler } from '../ApiCallHandler';
 import { LabelEntity } from '../../api/label/model';
 import { BatchGetItem, BatchInput, BatchInputBuilder } from '../../../dynamodb/wrapper/model/BatchInput';
@@ -25,12 +25,10 @@ export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutpu
     public handle = async (input: GetNoteInput): Promise<GetNoteOutput> => {
         const key = createNoteBasePrimaryKey(input.noteId);
         const { item } = await this.client.get<NoteDynamoDbItem>(key);
-        const note = fromDynamoDbItemToNoteEntity(item);
-        if (item[Attribute.LABELS]) {
-            note.labels = await this.getLabels(item[Attribute.LABELS]);
-        }
+        const entity = fromDynamoDbItemToNoteEntity(item);
+        await this.resolveNoteLabels(entity, item);
         return {
-            note
+            note: entity
         };
     };
 
@@ -60,5 +58,11 @@ export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutpu
             ) as LabelDynamoDbItem;
             return fromDynamoDbItemToLabelEntity(label, labelOverride);
         });
+    };
+
+    private resolveNoteLabels = async (entity: NoteEntity, item: NoteDynamoDbItem): Promise<void> => {
+        if (item[Attribute.LABELS]) {
+            entity.labels = await this.getLabels(item[Attribute.LABELS]);
+        }
     };
 }
