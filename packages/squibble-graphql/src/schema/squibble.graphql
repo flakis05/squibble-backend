@@ -5,4 +5,5 @@ interface Node {
 
 enum Color {
   TEAL
+  GREEN
 }

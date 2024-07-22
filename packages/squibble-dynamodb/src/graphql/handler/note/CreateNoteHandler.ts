@@ -34,23 +34,23 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
     };
 
     private createNoteDynamoDbItem = (input: WithDateNow<CreateNoteInput & NoteId>): NoteDynamoDbItem => {
-        return {
+        const note: NoteDynamoDbItem = {
             ...createNoteBasePrimaryKey(input.noteId),
             createdAt: input.dateNow,
             modifiedAt: input.dateNow,
             noteId: input.noteId,
             title: input.title,
-            content: input.content,
-            labels: this.createNoteLabelsDynamoDbItem(input)
+            content: input.content
         };
+        if (input.labels !== undefined) {
+            note.labels = this.createNoteLabelsDynamoDbItem({ dateNow: input.dateNow, labels: input.labels });
+        }
+        return note;
     };
 
     private createNoteLabelsDynamoDbItem = (
-        input: WithDateNow<Pick<CreateNoteInput, 'labels'>>
+        input: WithDateNow<Required<Pick<CreateNoteInput, 'labels'>>>
     ): LabelsAttributeValue => {
-        if (input.labels === undefined) {
-            return {};
-        }
         return input.labels.reduce((acc, curr: CreateNoteWithLabelInput) => {
             acc[curr.labelId] = {
                 labelId: curr.labelId,

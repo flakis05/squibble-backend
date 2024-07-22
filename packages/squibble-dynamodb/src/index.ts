@@ -30,7 +30,7 @@ const clientWrapper = new DynamoDBClientWrapper(Table.BASE, documentClient);
 const advancedlientWrapper = new AdvancedDynamoDbClientWrapper(documentClient, maxBatchGetSize, maxBatchWriteSize);
 const keySupplier = new KeySupplier();
 
-const getNoteHandler = new GetNoteHandler(clientWrapper);
+const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 const createLabelHandler = new CreateLabelHandler(clientWrapper, keySupplier);
 const deleteNoteHandler = new DeleteNoteHandler(clientWrapper);

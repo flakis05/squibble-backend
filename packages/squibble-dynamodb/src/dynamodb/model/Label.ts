@@ -6,10 +6,9 @@ import { BasePrimaryKey } from './Key';
 type LabelsAttributeValueRequiredKeys = Required<Pick<DynamoDbItem, Attribute.LABEL_ID>>;
 type LabelsAttributeValueOptionalKeys = Partial<Pick<DynamoDbItem, Attribute.COLOR>>;
 
-export type LabelsAttributeValue = Record<
-    string,
-    LabelsAttributeValueRequiredKeys & LabelsAttributeValueOptionalKeys & AddedAt
->;
+export type LabelOverride = LabelsAttributeValueRequiredKeys & LabelsAttributeValueOptionalKeys & AddedAt;
+
+export type LabelsAttributeValue = Record<string, LabelOverride>;
 
 type LabelTableKeys = BasePrimaryKey;
 type LabelRequiredItemKeys = Required<

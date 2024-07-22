@@ -31,6 +31,9 @@ export class BatchOutputBuilder {
     }
 
     public addItem = (table: string, item: BatchItem): BatchOutputBuilder => {
+        if (this.items[table] === undefined) {
+            this.items[table] = {};
+        }
         this.items[table][createBatchItemId(item)] = item;
         return this;
     };

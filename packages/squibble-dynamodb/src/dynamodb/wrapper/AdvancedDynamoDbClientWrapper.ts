@@ -4,6 +4,7 @@ import {
     BatchGetCommandOutput,
     BatchWriteCommand,
     BatchWriteCommandInput,
+    BatchWriteCommandOutput,
     DynamoDBDocumentClient
 } from '@aws-sdk/lib-dynamodb';
 import { DynamoDbException } from '../exceptions/DynamoDbException';
@@ -21,19 +22,19 @@ export class AdvancedDynamoDbClientWrapper {
         this.maxBatchWriteSize = maxBatchWriteSize;
     }
 
-    public batchGet = async (input: BatchInput<BatchGetItem>): Promise<BatchGetCommandOutput> => {
+    public batchGet = async (input: BatchInput<BatchGetItem>): Promise<BatchGetOutput> => {
         this.verifyBatchGetSize(input.items);
         const tableToKeys = this.createTableToBasePrimaryKeyRecord(input.items);
         const batchGetCommandInput = this.createBatchGetCommandInput(tableToKeys);
-        return await this.client.send(new BatchGetCommand(batchGetCommandInput));
+        const batchGetCommandOutput = await this.client.send(new BatchGetCommand(batchGetCommandInput));
+        return this.createBatchGetOutput(batchGetCommandOutput);
     };
 
-    public batchWrite = async (input: BatchInput<BatchWriteItem>): Promise<BatchGetOutput> => {
+    public batchWrite = async (input: BatchInput<BatchWriteItem>): Promise<BatchWriteCommandOutput> => {
         this.verifyBatchWriteSize(input.items);
         const tableToWriteTypeKeys = this.createTableToPutDeleteRecord(input.items);
         const batchWriteCommandInput = this.createBatchWriteCommandInput(tableToWriteTypeKeys);
-        const batchWriteCommandOutput = await this.client.send(new BatchWriteCommand(batchWriteCommandInput));
-        return this.createBatchGetOutput(batchWriteCommandOutput);
+        return await this.client.send(new BatchWriteCommand(batchWriteCommandInput));
     };
 
     private verifyBatchGetSize = (items: BatchGetItem[]) => {
