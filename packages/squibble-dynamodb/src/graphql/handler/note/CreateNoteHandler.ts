@@ -40,7 +40,8 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
             modifiedAt: input.dateNow,
             noteId: input.noteId,
             title: input.title,
-            content: input.content
+            content: input.content,
+            labels: {}
         };
         if (input.labels !== undefined) {
             note.labels = this.createNoteLabelsDynamoDbItem({ dateNow: input.dateNow, labels: input.labels });
