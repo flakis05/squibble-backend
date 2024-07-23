@@ -23,6 +23,13 @@ export interface CreateNoteOutput {
     note: NoteEntity;
 }
 
+export type AddLabelToNoteInput = NoteId & {
+    label: CreateNoteWithLabelInput;
+};
+export interface AddLabelToNoteOutput {
+    note: NoteId;
+}
+
 export type DeleteNoteInput = NoteId;
 export interface DeleteNoteOutput {
     success: boolean;

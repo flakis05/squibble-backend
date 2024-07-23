@@ -17,6 +17,15 @@ type CreateNoteOutput {
     note: Note!
 }
 
+input AddLabelToNoteInput {
+    noteId: ID!
+    label: CreateNoteWithLabelInput!
+}
+
+type AddLabelToNoteOutput {
+    note: Note!
+}
+
 input DeleteNoteInput {
     noteId: ID!
 }
@@ -32,5 +41,6 @@ type Query {
 
 type Mutation {
     createNote(input: CreateNoteInput!): CreateNoteOutput!
+    addLabelToNote(input: AddLabelToNoteInput!): AddLabelToNoteOutput!
     deleteNote(input: DeleteNoteInput!): DeleteNoteOutput!
 }
