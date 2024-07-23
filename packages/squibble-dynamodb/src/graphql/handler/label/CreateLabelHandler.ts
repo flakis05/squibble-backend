@@ -31,7 +31,8 @@ export class CreateLabelHandler implements ApiCallHandler<CreateLabelInput, Crea
             createdAt: input.dateNow,
             labelId: input.labelId,
             title: input.title,
-            color: input.color
+            color: input.color,
+            description: input.description
         };
     };
 }

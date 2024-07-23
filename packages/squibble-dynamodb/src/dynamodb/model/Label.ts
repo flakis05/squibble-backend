@@ -14,6 +14,6 @@ type LabelTableKeys = BasePrimaryKey;
 type LabelRequiredItemKeys = Required<
     Pick<DynamoDbItem, Attribute.LABEL_ID | Attribute.CREATED_AT | Attribute.TITLE | Attribute.COLOR>
 >;
-type LabelOptionalItemKeys = Partial<Pick<DynamoDbItem, Attribute.DELETED_AT>>;
+type LabelOptionalItemKeys = Partial<Pick<DynamoDbItem, Attribute.DELETED_AT | Attribute.DESCRIPTION>>;
 
 export type LabelDynamoDbItem = LabelTableKeys & LabelRequiredItemKeys & LabelOptionalItemKeys;

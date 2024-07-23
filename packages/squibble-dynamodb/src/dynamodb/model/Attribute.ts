@@ -9,5 +9,6 @@ export enum Attribute {
     TITLE = 'title',
     CONTENT = 'content',
     COLOR = 'color',
-    LABELS = 'labels'
+    LABELS = 'labels',
+    DESCRIPTION = 'description'
 }

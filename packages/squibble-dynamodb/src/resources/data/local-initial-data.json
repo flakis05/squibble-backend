@@ -57,7 +57,8 @@
       },
       {
         "title": "engineering",
-        "color": "green"
+        "color": "green",
+        "description": "All fields of engineering"
       }
     ]
   }

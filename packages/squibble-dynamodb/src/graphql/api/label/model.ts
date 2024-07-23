@@ -6,6 +6,7 @@ export type LabelId = Entity<'labelId'>;
 interface LabelData {
     title: string;
     color: Color;
+    description?: string;
 }
 
 export type LabelEntity = LabelId & CreatedAt & LabelData;

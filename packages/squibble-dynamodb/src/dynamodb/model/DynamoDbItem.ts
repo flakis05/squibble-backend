@@ -14,4 +14,5 @@ export interface DynamoDbItem {
     [Attribute.CONTENT]?: string;
     [Attribute.COLOR]?: Color;
     [Attribute.LABELS]?: LabelsAttributeValue;
+    [Attribute.DESCRIPTION]?: string;
 }

@@ -9,8 +9,9 @@ export const fromDynamoDbItem = (item: LabelDynamoDbItem, labelOverride?: LabelO
     }
     return {
         labelId: item[Attribute.LABEL_ID],
+        createdAt: labelOverride?.addedAt ?? item[Attribute.CREATED_AT],
         title: item[Attribute.TITLE],
         color: labelOverride?.color ?? item[Attribute.COLOR],
-        createdAt: labelOverride?.addedAt ?? item[Attribute.CREATED_AT]
+        description: item[Attribute.DESCRIPTION]
     };
 };
