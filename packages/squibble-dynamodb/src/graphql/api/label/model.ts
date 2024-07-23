@@ -14,6 +14,11 @@ export type CreateNoteWithLabelInput = LabelId & Partial<Pick<LabelData, 'color'
 
 export type CreateLabelInput = LabelData;
 
+export type UpdateLabelInput = LabelId & Partial<LabelData>;
+export interface UpdateLabelOutput {
+    label: LabelId;
+}
+
 export interface CreateLabelOutput {
     label: LabelEntity;
 }

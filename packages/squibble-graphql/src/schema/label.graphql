@@ -19,6 +19,17 @@ type CreateLabelOutput {
     label: Label!
 }
 
+input UpdateLabelInput {
+    labelId: ID!
+    title: String
+    color: Color
+}
+
+type UpdateLabelOutput {
+    label: Label!
+}
+
 type Mutation {
     createLabel(input: CreateLabelInput!): CreateLabelOutput!
+    updateLabel(input: UpdateLabelInput!): UpdateLabelOutput!
 }
