@@ -30,6 +30,11 @@ export interface AddLabelToNoteOutput {
     note: NoteId;
 }
 
+export type UpdateNoteInput = NoteId & Partial<Omit<NoteData, 'labels'>>;
+export interface UpdateNoteOutput {
+    note: NoteId;
+}
+
 export type DeleteNoteInput = NoteId;
 export interface DeleteNoteOutput {
     success: boolean;

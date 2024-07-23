@@ -1,7 +1,7 @@
 type Label {
     labelId: ID!
-    title: String!
     createdAt: AWSDateTime!
+    title: String!
     color: Color!
 }
 

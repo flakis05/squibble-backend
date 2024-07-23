@@ -12,7 +12,9 @@ import {
     CreateNoteInput,
     CreateNoteOutput,
     DeleteNoteInput,
-    DeleteNoteOutput
+    DeleteNoteOutput,
+    UpdateNoteInput,
+    UpdateNoteOutput
 } from './graphql/api/note/model';
 import { CreateNoteHandler } from './graphql/handler/note/CreateNoteHandler';
 import { GetNoteHandler } from './graphql/handler/note/GetNoteHandler';
@@ -29,6 +31,8 @@ import { CreateLabelMutationCall } from './graphql/mutation/label/CreateLabelMut
 import { Color } from './dynamodb/model/Color';
 import { AddLabelToNoteMutationCall } from './graphql/mutation/note/AddLabelToNoteMutationCall';
 import { AddLabelToNoteHandler } from './graphql/handler/note/AddLabelToNoteHandler';
+import { UpdateNoteHandler } from './graphql/handler/note/UpdateNoteHandler';
+import { UpdateNoteMutationCall } from './graphql/mutation/note/UpdateNoteMutationCall';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -42,6 +46,7 @@ const keySupplier = new KeySupplier();
 const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 const addLabelToNoteHandler = new AddLabelToNoteHandler(clientWrapper);
+const updateNoteHandler = new UpdateNoteHandler(clientWrapper);
 const createLabelHandler = new CreateLabelHandler(clientWrapper, keySupplier);
 const deleteNoteHandler = new DeleteNoteHandler(clientWrapper);
 
@@ -53,6 +58,8 @@ const addLabelToNoteMutationCall = new AddLabelToNoteMutationCall(addLabelToNote
 const addLabelToNoteMutationResolver = new MutationResolver<AddLabelToNoteInput, AddLabelToNoteOutput>(
     addLabelToNoteMutationCall
 );
+const updateNoteMutationCall = new UpdateNoteMutationCall(updateNoteHandler);
+const updateNoteMutationResolver = new MutationResolver<UpdateNoteInput, UpdateNoteOutput>(updateNoteMutationCall);
 const createLabelMutationCall = new CreateLabelMutationCall(createLabelHandler);
 const createLabelMutationResolver = new MutationResolver<CreateLabelInput, CreateLabelOutput>(createLabelMutationCall);
 const deleteNoteMutationCall = new DeleteNoteMutationCall(deleteNoteHandler);
@@ -68,6 +75,7 @@ const resolvers = {
     Mutation: {
         createNote: createNoteMutationResolver.resolve,
         addLabelToNote: addLabelToNoteMutationResolver.resolve,
+        updateNote: updateNoteMutationResolver.resolve,
         createLabel: createLabelMutationResolver.resolve,
         deleteNote: deleteNoteMutationResolver.resolve
     },
