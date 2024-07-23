@@ -63,6 +63,8 @@ export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutpu
     private resolveNoteLabels = async (entity: NoteEntity, item: NoteDynamoDbItem): Promise<void> => {
         if (Object.keys(item[Attribute.LABELS]).length !== 0) {
             entity.labels = await this.getLabels(item[Attribute.LABELS]);
+        } else {
+            entity.labels = [];
         }
     };
 }
