@@ -1,10 +1,15 @@
 import { ApiCallHandler } from '../ApiCallHandler';
 import { AddLabelToNoteInput, AddLabelToNoteOutput, NoteId } from '../../api/note/model';
 import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
-import { WithDateNow } from '../../../api/model';
+import { ID, WithDateNow } from '../../../api/model';
 import { BasePrimaryKey } from '../../../dynamodb/model/Key';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
-import { AdvancedDynamoDbClientWrapper } from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
+import {
+    AdvancedDynamoDbClientWrapper,
+    TransactConditionCheckItem,
+    TransactPutItem,
+    TransactUpdateItem
+} from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { TransactWriteCommandInput } from '@aws-sdk/lib-dynamodb';
 import { Table } from '../../../dynamodb/model/Table';
 import { createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-factory';
@@ -27,24 +32,13 @@ export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput
         const addLabelToNoteTransaction: TransactWriteCommandInput = {
             TransactItems: [
                 {
-                    ConditionCheck: {
-                        TableName: Table.BASE,
-                        Key: createLabelBasePrimaryKey(label.labelId),
-                        ConditionExpression: attributeExists(Attribute.PK)
-                    }
+                    ConditionCheck: this.checkIfLabelIdExists(label.labelId)
                 },
                 {
-                    Update: {
-                        TableName: Table.BASE,
-                        Key: createNoteBasePrimaryKey(noteId),
-                        ...createUpdateExpression(noteDynamoDbItem)
-                    }
+                    Update: this.addLabelToNote(noteId, noteDynamoDbItem)
                 },
                 {
-                    Put: {
-                        TableName: Table.BASE,
-                        Item: this.createNoteLabelDynamoDbItems({ dateNow, noteId, ...label })
-                    }
+                    Put: this.createNoteLabelAssociation(dateNow, noteId, label)
                 }
             ]
         };
@@ -79,5 +73,29 @@ export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput
         noteId: input.noteId,
         labelId: input.labelId,
         createdAt: input.dateNow
+    });
+
+    private checkIfLabelIdExists = (labelId: ID): TransactConditionCheckItem => ({
+        TableName: Table.BASE,
+        Key: createLabelBasePrimaryKey(labelId),
+        ConditionExpression: attributeExists(Attribute.PK)
+    });
+
+    private addLabelToNote = (
+        noteId: ID,
+        item: Partial<Omit<NoteDynamoDbItem, keyof BasePrimaryKey>>
+    ): TransactUpdateItem => ({
+        TableName: Table.BASE,
+        Key: createNoteBasePrimaryKey(noteId),
+        ...createUpdateExpression(item)
+    });
+
+    private createNoteLabelAssociation = (
+        dateNow: string,
+        noteId: ID,
+        label: CreateNoteWithLabelInput
+    ): TransactPutItem => ({
+        TableName: Table.BASE,
+        Item: this.createNoteLabelDynamoDbItems({ dateNow, noteId, ...label })
     });
 }

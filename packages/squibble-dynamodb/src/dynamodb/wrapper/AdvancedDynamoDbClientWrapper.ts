@@ -6,6 +6,7 @@ import {
     BatchWriteCommandInput,
     BatchWriteCommandOutput,
     DynamoDBDocumentClient,
+    NativeAttributeValue,
     TransactWriteCommand,
     TransactWriteCommandInput
 } from '@aws-sdk/lib-dynamodb';
@@ -13,6 +14,25 @@ import { DynamoDbException } from '../exceptions/DynamoDbException';
 import { BasePrimaryKey } from '../model/Key';
 import { BatchInput, BatchGetItem, BatchWriteItem, BatchWriteType } from './model/BatchInput';
 import { BatchGetOutput, BatchItem, BatchOutputBuilder } from './model/BatchGetOutput';
+import { ConditionCheck, Delete, Put, Update } from '@aws-sdk/client-dynamodb';
+
+export type TransactConditionCheckItem = Omit<ConditionCheck, 'Key' | 'ExpressionAttributeValues'> & {
+    Key: Record<string, NativeAttributeValue>;
+    ExpressionAttributeValues?: Record<string, NativeAttributeValue>;
+};
+
+export type TransactPutItem = Omit<Put, 'Item' | 'ExpressionAttributeValues'> & {
+    Item: Record<string, NativeAttributeValue>;
+    ExpressionAttributeValues?: Record<string, NativeAttributeValue>;
+};
+export type TransactDeleteItem = Omit<Delete, 'Key' | 'ExpressionAttributeValues'> & {
+    Key: Record<string, NativeAttributeValue>;
+    ExpressionAttributeValues?: Record<string, NativeAttributeValue>;
+};
+export type TransactUpdateItem = Omit<Update, 'Key' | 'ExpressionAttributeValues'> & {
+    Key: Record<string, NativeAttributeValue>;
+    ExpressionAttributeValues?: Record<string, NativeAttributeValue>;
+};
 
 export class AdvancedDynamoDbClientWrapper {
     private client: DynamoDBDocumentClient;
