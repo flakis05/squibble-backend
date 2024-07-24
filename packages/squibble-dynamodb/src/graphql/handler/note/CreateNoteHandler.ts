@@ -1,7 +1,7 @@
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
 import { WithDateNow } from '../../../api/model';
-import { createBasePrimaryKey as createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
-import { createBasePrimaryKey as createNoteLabelBasePrimaryKey } from '../../../dynamodb/key/note-label-key-factory';
+import { createNoteBasePrimaryKey as createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import { createNoteLabelBasePrimaryKey as createNoteLabelBasePrimaryKey } from '../../../dynamodb/key/note-label-key-factory';
 import { KeySupplier } from '../../util/KeySupplier';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { fromDynamoDbItem } from '../../api/note/factory/note-factory';

@@ -1,5 +1,5 @@
 import { WithDateNow } from '../../../api/model';
-import { createBasePrimaryKey } from '../../../dynamodb/key/label-key-factory';
+import { createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-factory';
 import { LabelDynamoDbItem } from '../../../dynamodb/model/Label';
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { fromDynamoDbItem } from '../../api/label/factory/label-factory';
@@ -27,7 +27,7 @@ export class CreateLabelHandler implements ApiCallHandler<CreateLabelInput, Crea
 
     private createLabelDynamoDbItem = (input: WithDateNow<CreateLabelInput & LabelId>): LabelDynamoDbItem => {
         return {
-            ...createBasePrimaryKey(input.labelId),
+            ...createLabelBasePrimaryKey(input.labelId),
             createdAt: input.dateNow,
             labelId: input.labelId,
             title: input.title,

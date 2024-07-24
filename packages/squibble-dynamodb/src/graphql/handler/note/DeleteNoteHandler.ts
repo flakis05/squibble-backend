@@ -1,7 +1,7 @@
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { DeleteNoteInput, DeleteNoteOutput } from '../../api/note/model';
 import { ApiCallHandler } from '../ApiCallHandler';
-import { createBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
 import { WithDateNow } from '../../../api/model';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { BasePrimaryKey } from '../../../dynamodb/model/Key';
@@ -13,7 +13,7 @@ export class DeleteNoteHandler implements ApiCallHandler<DeleteNoteInput, Delete
     }
     public handle = async (input: DeleteNoteInput): Promise<DeleteNoteOutput> => {
         const dateNow = new Date().toISOString();
-        const key = createBasePrimaryKey(input.noteId);
+        const key = createNoteBasePrimaryKey(input.noteId);
         const noteDynamoDbItem = this.createUpdatedNoteDynamoDbItem({ dateNow, ...input });
 
         await this.client.update(key, noteDynamoDbItem);

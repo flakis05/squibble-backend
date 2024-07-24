@@ -1,5 +1,5 @@
-import { createBasePrimaryKey as createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
-import { createBasePrimaryKey as createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-factory';
+import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import { createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-factory';
 import { Attribute } from '../../../dynamodb/model/Attribute';
 import { LabelDynamoDbItem, LabelsAttributeValue } from '../../../dynamodb/model/Label';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
