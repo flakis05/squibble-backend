@@ -3,6 +3,7 @@ import {
     CreateTableCommandInput,
     DescribeTableCommandInput,
     KeyType,
+    ProjectionType,
     ScalarAttributeType,
     waitUntilTableExists
 } from '@aws-sdk/client-dynamodb';
@@ -12,15 +13,15 @@ import { initializeItemsInTable } from './table-item-initializer';
 import { CreateLabelInput, CreateLabelOutput } from '../../graphql/api/label/model';
 import { CreateNoteInput, CreateNoteOutput } from '../../graphql/api/note/model';
 import { ApiCallHandler } from '../../graphql/handler/ApiCallHandler';
+import { Index, Table } from '../model/Table';
 
 export const initializeDynamoDbTable = async (
-    tableName: string,
     createNoteHandler: ApiCallHandler<CreateNoteInput, CreateNoteOutput>,
     createLabelHandler: ApiCallHandler<CreateLabelInput, CreateLabelOutput>
 ): Promise<void> => {
     console.log('Initializing DynamoDb tables');
-    const createTableCommandInput: CreateTableCommandInput = createTableRequest(tableName);
-    const describeTableCommandInput: DescribeTableCommandInput = { TableName: tableName };
+    const createTableCommandInput: CreateTableCommandInput = createTableRequest();
+    const describeTableCommandInput: DescribeTableCommandInput = { TableName: Table.BASE };
     try {
         await client.send(new CreateTableCommand(createTableCommandInput));
         await waitUntilTableExists({ client, maxWaitTime: 30 }, describeTableCommandInput);
@@ -33,8 +34,8 @@ export const initializeDynamoDbTable = async (
     }
 };
 
-const createTableRequest = (tableName: string): CreateTableCommandInput => ({
-    TableName: tableName,
+const createTableRequest = (): CreateTableCommandInput => ({
+    TableName: Table.BASE,
     AttributeDefinitions: [
         {
             AttributeName: Attribute.PK,
@@ -42,6 +43,23 @@ const createTableRequest = (tableName: string): CreateTableCommandInput => ({
         },
         {
             AttributeName: Attribute.SK,
+            AttributeType: ScalarAttributeType.S
+        },
+        {
+            AttributeName: Attribute.GSI1_PK,
+            AttributeType: ScalarAttributeType.S
+        },
+        {
+            AttributeName: Attribute.GSI1_SK,
+            AttributeType: ScalarAttributeType.S
+        },
+
+        {
+            AttributeName: Attribute.GSI2_PK,
+            AttributeType: ScalarAttributeType.S
+        },
+        {
+            AttributeName: Attribute.GSI2_SK,
             AttributeType: ScalarAttributeType.S
         }
     ],
@@ -58,5 +76,47 @@ const createTableRequest = (tableName: string): CreateTableCommandInput => ({
     ProvisionedThroughput: {
         ReadCapacityUnits: 5,
         WriteCapacityUnits: 5
-    }
+    },
+    GlobalSecondaryIndexes: [
+        {
+            IndexName: Index.ONE,
+            KeySchema: [
+                {
+                    AttributeName: Attribute.GSI1_PK,
+                    KeyType: KeyType.HASH
+                },
+                {
+                    AttributeName: Attribute.GSI1_SK,
+                    KeyType: KeyType.RANGE
+                }
+            ],
+            ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5
+            },
+            Projection: {
+                ProjectionType: ProjectionType.ALL
+            }
+        },
+        {
+            IndexName: Index.TWO,
+            KeySchema: [
+                {
+                    AttributeName: Attribute.GSI2_PK,
+                    KeyType: KeyType.HASH
+                },
+                {
+                    AttributeName: Attribute.GSI2_SK,
+                    KeyType: KeyType.RANGE
+                }
+            ],
+            ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5
+            },
+            Projection: {
+                ProjectionType: ProjectionType.ALL
+            }
+        }
+    ]
 });
