@@ -1,3 +1,4 @@
+import { Attribute } from '../model/Attribute';
 import { DynamoDbItem } from '../model/DynamoDbItem';
 
 export interface UpdateExpression {
@@ -47,3 +48,5 @@ export const createUpdateExpression = <T extends DynamoDbItem>(data: T): UpdateE
         ExpressionAttributeValues: values
     };
 };
+
+export const attributeExists = (attribute: Attribute) => `attribute_exists(${attribute})`;

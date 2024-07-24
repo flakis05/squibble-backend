@@ -47,7 +47,7 @@ const keySupplier = new KeySupplier();
 
 const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
-const addLabelToNoteHandler = new AddLabelToNoteHandler(clientWrapper);
+const addLabelToNoteHandler = new AddLabelToNoteHandler(advancedlientWrapper);
 const updateNoteHandler = new UpdateNoteHandler(clientWrapper);
 const createLabelHandler = new CreateLabelHandler(clientWrapper, keySupplier);
 const updateLabelHandler = new UpdateLabelHandler(clientWrapper);

@@ -5,7 +5,9 @@ import {
     BatchWriteCommand,
     BatchWriteCommandInput,
     BatchWriteCommandOutput,
-    DynamoDBDocumentClient
+    DynamoDBDocumentClient,
+    TransactWriteCommand,
+    TransactWriteCommandInput
 } from '@aws-sdk/lib-dynamodb';
 import { DynamoDbException } from '../exceptions/DynamoDbException';
 import { BasePrimaryKey } from '../model/Key';
@@ -21,6 +23,10 @@ export class AdvancedDynamoDbClientWrapper {
         this.maxBatchGetSize = maxBatchGetSize;
         this.maxBatchWriteSize = maxBatchWriteSize;
     }
+
+    public writeTranscation = async (input: TransactWriteCommandInput): Promise<void> => {
+        await this.client.send(new TransactWriteCommand(input));
+    };
 
     public batchGet = async (input: BatchInput<BatchGetItem>): Promise<BatchGetOutput> => {
         this.verifyBatchGetSize(input.items);
