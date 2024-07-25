@@ -3,8 +3,8 @@ import { ApiCallHandler } from '../ApiCallHandler';
 import { UpdateNoteInput, UpdateNoteOutput } from '../../api/note/model';
 import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
 import { WithDateNow } from '../../../api/model';
-import { BasePrimaryKey } from '../../../dynamodb/model/Key';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
+import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
 
 export class UpdateNoteHandler implements ApiCallHandler<UpdateNoteInput, UpdateNoteOutput> {
     private client: DynamoDBClientWrapper;
@@ -27,7 +27,7 @@ export class UpdateNoteHandler implements ApiCallHandler<UpdateNoteInput, Update
 
     private createUpdatedNoteDynamoDbItem = (
         input: WithDateNow<UpdateNoteInput>
-    ): Partial<Omit<NoteDynamoDbItem, keyof BasePrimaryKey>> => {
+    ): UpdatedDynamoDbItem<NoteDynamoDbItem> => {
         return {
             modifiedAt: input.dateNow,
             ...input

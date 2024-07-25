@@ -4,7 +4,7 @@ import { ApiCallHandler } from '../ApiCallHandler';
 import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
 import { WithDateNow } from '../../../api/model';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
-import { BasePrimaryKey } from '../../../dynamodb/model/Key';
+import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
 
 export class DeleteNoteHandler implements ApiCallHandler<DeleteNoteInput, DeleteNoteOutput> {
     private client: DynamoDBClientWrapper;
@@ -25,7 +25,7 @@ export class DeleteNoteHandler implements ApiCallHandler<DeleteNoteInput, Delete
 
     private createUpdatedNoteDynamoDbItem = (
         input: WithDateNow<DeleteNoteInput>
-    ): Partial<Omit<NoteDynamoDbItem, keyof BasePrimaryKey>> => {
+    ): UpdatedDynamoDbItem<NoteDynamoDbItem> => {
         return {
             deletedAt: input.dateNow
         };

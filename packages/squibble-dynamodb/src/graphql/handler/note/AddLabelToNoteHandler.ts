@@ -2,7 +2,6 @@ import { ApiCallHandler } from '../ApiCallHandler';
 import { AddLabelToNoteInput, AddLabelToNoteOutput } from '../../api/note/model';
 import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
 import { WithDateNow } from '../../../api/model';
-import { BasePrimaryKey } from '../../../dynamodb/model/Key';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import {
     AdvancedDynamoDbClientWrapper,
@@ -16,6 +15,7 @@ import { createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-facto
 import { attributeExists, createUpdateExpression } from '../../../dynamodb/util/expression-factory';
 import { Attribute } from '../../../dynamodb/model/Attribute';
 import { createNoteLabelDynamoDbItem } from '../../api/note/factory/note-label-factory';
+import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
 
 export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput, AddLabelToNoteOutput> {
     private client: AdvancedDynamoDbClientWrapper;
@@ -49,7 +49,7 @@ export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput
 
     private createUpdatedNoteDynamoDbItem = (
         input: WithDateNow<AddLabelToNoteInput>
-    ): Partial<Omit<NoteDynamoDbItem, keyof BasePrimaryKey>> => ({
+    ): UpdatedDynamoDbItem<NoteDynamoDbItem> => ({
         modifiedAt: input.dateNow,
         labels: {
             [input.label.labelId]: {

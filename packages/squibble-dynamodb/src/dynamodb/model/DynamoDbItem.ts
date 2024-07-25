@@ -1,5 +1,6 @@
 import { Attribute } from './Attribute';
 import { Color } from './Color';
+import { BasePrimaryKey } from './Key';
 import { LabelsAttributeValue } from './Label';
 
 export interface DynamoDbItem {
@@ -16,3 +17,5 @@ export interface DynamoDbItem {
     [Attribute.LABELS]?: LabelsAttributeValue;
     [Attribute.DESCRIPTION]?: string;
 }
+
+export type UpdatedDynamoDbItem<T extends DynamoDbItem> = Partial<Omit<T, keyof BasePrimaryKey>>;

@@ -2,8 +2,8 @@ import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientW
 import { ApiCallHandler } from '../ApiCallHandler';
 import { UpdateLabelInput, UpdateLabelOutput } from '../../api/label/model';
 import { createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-factory';
-import { BasePrimaryKey } from '../../../dynamodb/model/Key';
 import { LabelDynamoDbItem } from '../../../dynamodb/model/Label';
+import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
 
 export class UpdateLabelHandler implements ApiCallHandler<UpdateLabelInput, UpdateLabelOutput> {
     private client: DynamoDBClientWrapper;
@@ -23,9 +23,7 @@ export class UpdateLabelHandler implements ApiCallHandler<UpdateLabelInput, Upda
         };
     };
 
-    private createUpdatedLabelDynamoDbItem = (
-        input: UpdateLabelInput
-    ): Partial<Omit<LabelDynamoDbItem, keyof BasePrimaryKey>> => {
+    private createUpdatedLabelDynamoDbItem = (input: UpdateLabelInput): UpdatedDynamoDbItem<LabelDynamoDbItem> => {
         return {
             ...input
         };
