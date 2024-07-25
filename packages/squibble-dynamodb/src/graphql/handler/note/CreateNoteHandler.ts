@@ -1,7 +1,6 @@
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
 import { WithDateNow } from '../../../api/model';
 import { createNoteBasePrimaryKey as createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
-import { createNoteLabelBasePrimaryKey as createNoteLabelBasePrimaryKey } from '../../../dynamodb/key/note-label-key-factory';
 import { KeySupplier } from '../../util/KeySupplier';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { fromDynamoDbItem } from '../../api/note/factory/note-factory';
@@ -12,6 +11,7 @@ import { Table } from '../../../dynamodb/model/Table';
 import { LabelsAttributeValue } from '../../../dynamodb/model/Label';
 import { AddLabelInput } from '../../api/label/model';
 import { BatchInput, BatchInputBuilder, BatchWriteItem } from '../../../dynamodb/wrapper/model/BatchInput';
+import { createNoteLabelDynamoDbItem } from '../../api/note/factory/note-label-factory';
 
 export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, CreateNoteOutput> {
     private client: AdvancedDynamoDbClientWrapper;
@@ -68,12 +68,9 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
         if (input.labels === undefined) {
             return [];
         }
-        return input.labels.map((label) => ({
-            ...createNoteLabelBasePrimaryKey(input.noteId, label.labelId),
-            createdAt: input.dateNow,
-            noteId: input.noteId,
-            labelId: label.labelId
-        }));
+        return input.labels.map((label) =>
+            createNoteLabelDynamoDbItem({ dateNow: input.dateNow, noteId: input.noteId, label })
+        );
     };
 
     private createBatchInput = (items: (NoteDynamoDbItem | NoteLabelDynamoDbItem)[]): BatchInput<BatchWriteItem> => {
