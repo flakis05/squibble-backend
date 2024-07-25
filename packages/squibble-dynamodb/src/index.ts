@@ -25,7 +25,14 @@ import { KeySupplier } from './graphql/util/KeySupplier';
 import { AdvancedDynamoDbClientWrapper } from './dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { DeleteNoteHandler } from './graphql/handler/note/DeleteNoteHandler';
 import { DeleteNoteMutationCall } from './graphql/mutation/note/DeleteNoteMutationCall';
-import { CreateLabelInput, CreateLabelOutput, UpdateLabelInput, UpdateLabelOutput } from './graphql/api/label/model';
+import {
+    CreateLabelInput,
+    CreateLabelOutput,
+    DeleteLabelInput,
+    DeleteLabelOutput,
+    UpdateLabelInput,
+    UpdateLabelOutput
+} from './graphql/api/label/model';
 import { CreateLabelHandler } from './graphql/handler/label/CreateLabelHandler';
 import { CreateLabelMutationCall } from './graphql/mutation/label/CreateLabelMutationCall';
 import { Color } from './dynamodb/model/Color';
@@ -35,6 +42,8 @@ import { UpdateNoteHandler } from './graphql/handler/note/UpdateNoteHandler';
 import { UpdateNoteMutationCall } from './graphql/mutation/note/UpdateNoteMutationCall';
 import { UpdateLabelHandler } from './graphql/handler/label/UpdateLabelHandler';
 import { UpdateLabelMutationCall } from './graphql/mutation/label/UpdateLabelMutationCall';
+import { DeleteLabelHandler } from './graphql/handler/label/DeleteLabelHandler';
+import { DeleteLabelMutationCall } from './graphql/mutation/label/DeleteLabelMutationCall';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -49,9 +58,10 @@ const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 const addLabelToNoteHandler = new AddLabelToNoteHandler(advancedlientWrapper);
 const updateNoteHandler = new UpdateNoteHandler(clientWrapper);
+const deleteNoteHandler = new DeleteNoteHandler(clientWrapper);
 const createLabelHandler = new CreateLabelHandler(clientWrapper, keySupplier);
 const updateLabelHandler = new UpdateLabelHandler(clientWrapper);
-const deleteNoteHandler = new DeleteNoteHandler(clientWrapper);
+const deleteLabelHandler = new DeleteLabelHandler(clientWrapper);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
 
@@ -63,13 +73,14 @@ const addLabelToNoteMutationResolver = new MutationResolver<AddLabelToNoteInput,
 );
 const updateNoteMutationCall = new UpdateNoteMutationCall(updateNoteHandler);
 const updateNoteMutationResolver = new MutationResolver<UpdateNoteInput, UpdateNoteOutput>(updateNoteMutationCall);
+const deleteNoteMutationCall = new DeleteNoteMutationCall(deleteNoteHandler);
+const deleteNoteMutationResolver = new MutationResolver<DeleteNoteInput, DeleteNoteOutput>(deleteNoteMutationCall);
 const createLabelMutationCall = new CreateLabelMutationCall(createLabelHandler);
 const createLabelMutationResolver = new MutationResolver<CreateLabelInput, CreateLabelOutput>(createLabelMutationCall);
 const updateLabelMutationCall = new UpdateLabelMutationCall(updateLabelHandler);
 const updateLabelMutationResolver = new MutationResolver<UpdateLabelInput, UpdateLabelOutput>(updateLabelMutationCall);
-const deleteNoteMutationCall = new DeleteNoteMutationCall(deleteNoteHandler);
-const deleteNoteMutationResolver = new MutationResolver<DeleteNoteInput, DeleteNoteOutput>(deleteNoteMutationCall);
-
+const deleteLabelMutationCall = new DeleteLabelMutationCall(deleteLabelHandler);
+const deleteLabelMutationResolver = new MutationResolver<DeleteLabelInput, DeleteLabelOutput>(deleteLabelMutationCall);
 const resolvers = {
     Query: {
         note: getNoteResolver.resolve,
@@ -81,9 +92,10 @@ const resolvers = {
         createNote: createNoteMutationResolver.resolve,
         addLabelToNote: addLabelToNoteMutationResolver.resolve,
         updateNote: updateNoteMutationResolver.resolve,
+        deleteNote: deleteNoteMutationResolver.resolve,
         createLabel: createLabelMutationResolver.resolve,
         updateLabel: updateLabelMutationResolver.resolve,
-        deleteNote: deleteNoteMutationResolver.resolve
+        deleteLabel: deleteLabelMutationResolver.resolve
     },
     Color
 };

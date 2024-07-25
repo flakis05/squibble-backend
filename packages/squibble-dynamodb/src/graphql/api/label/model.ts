@@ -23,3 +23,8 @@ export interface UpdateLabelOutput {
 export interface CreateLabelOutput {
     label: LabelEntity;
 }
+
+export type DeleteLabelInput = LabelId;
+export interface DeleteLabelOutput {
+    success: boolean;
+}

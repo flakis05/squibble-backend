@@ -32,7 +32,16 @@ type UpdateLabelOutput {
     label: Label!
 }
 
+input DeleteLabelInput {
+    labelId: ID!
+}
+
+type DeleteLabelOutput {
+    success: Boolean!
+}
+
 type Mutation {
     createLabel(input: CreateLabelInput!): CreateLabelOutput!
     updateLabel(input: UpdateLabelInput!): UpdateLabelOutput!
+    deleteLabel(input: DeleteLabelInput!): DeleteLabelOutput!
 }
