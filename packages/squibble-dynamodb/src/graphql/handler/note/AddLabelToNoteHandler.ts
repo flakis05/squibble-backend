@@ -16,7 +16,7 @@ import { createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-facto
 import { attributeExists, createUpdateExpression } from '../../../dynamodb/util/expression-factory';
 import { Attribute } from '../../../dynamodb/model/Attribute';
 import { createNoteLabelBasePrimaryKey } from '../../../dynamodb/key/note-label-key-factory';
-import { LabelInput } from '../../api/label/model';
+import { AddLabelInput } from '../../api/label/model';
 import { NoteLabelDynamoDbItem } from '../../../dynamodb/model/NoteLabel';
 
 export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput, AddLabelToNoteOutput> {
@@ -52,7 +52,7 @@ export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput
     };
 
     private createUpdatedNoteDynamoDbItem = (
-        input: WithDateNow<LabelInput>
+        input: WithDateNow<AddLabelInput>
     ): Partial<Omit<NoteDynamoDbItem, keyof BasePrimaryKey>> => {
         return {
             modifiedAt: input.dateNow,
@@ -66,7 +66,7 @@ export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput
         };
     };
 
-    private createNoteLabelDynamoDbItems = (input: WithDateNow<LabelInput & NoteId>): NoteLabelDynamoDbItem => ({
+    private createNoteLabelDynamoDbItems = (input: WithDateNow<AddLabelInput & NoteId>): NoteLabelDynamoDbItem => ({
         ...createNoteLabelBasePrimaryKey(input.noteId, input.labelId),
         noteId: input.noteId,
         labelId: input.labelId,
@@ -88,7 +88,7 @@ export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput
         ...createUpdateExpression(item)
     });
 
-    private createNoteLabelAssociation = (dateNow: string, noteId: ID, label: LabelInput): TransactPutItem => ({
+    private createNoteLabelAssociation = (dateNow: string, noteId: ID, label: AddLabelInput): TransactPutItem => ({
         TableName: Table.BASE,
         Item: this.createNoteLabelDynamoDbItems({ dateNow, noteId, ...label })
     });

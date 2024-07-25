@@ -6,7 +6,7 @@ type Label {
     description: String
 }
 
-input CreateNoteWithLabelInput {
+input AddLabelInput {
     labelId: ID!
     color: Color
 }

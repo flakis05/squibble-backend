@@ -10,7 +10,7 @@ import { NoteLabelDynamoDbItem } from '../../../dynamodb/model/NoteLabel';
 import { AdvancedDynamoDbClientWrapper } from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { Table } from '../../../dynamodb/model/Table';
 import { LabelsAttributeValue } from '../../../dynamodb/model/Label';
-import { LabelInput } from '../../api/label/model';
+import { AddLabelInput } from '../../api/label/model';
 import { BatchInput, BatchInputBuilder, BatchWriteItem } from '../../../dynamodb/wrapper/model/BatchInput';
 
 export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, CreateNoteOutput> {
@@ -52,7 +52,7 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
     private createNoteLabelsDynamoDbItem = (
         input: WithDateNow<Required<Pick<CreateNoteInput, 'labels'>>>
     ): LabelsAttributeValue => {
-        return input.labels.reduce((acc, curr: LabelInput) => {
+        return input.labels.reduce((acc, curr: AddLabelInput) => {
             acc[curr.labelId] = {
                 labelId: curr.labelId,
                 color: curr.color,
