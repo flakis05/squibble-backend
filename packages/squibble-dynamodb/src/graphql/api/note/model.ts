@@ -39,3 +39,8 @@ export type DeleteNoteInput = NoteId;
 export interface DeleteNoteOutput {
     success: boolean;
 }
+
+export type ArchiveNoteInput = NoteId;
+export interface ArchiveNoteOutput {
+    note: NoteId;
+}

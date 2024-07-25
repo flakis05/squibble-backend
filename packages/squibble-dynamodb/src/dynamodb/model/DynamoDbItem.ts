@@ -6,6 +6,10 @@ import { LabelsAttributeValue } from './Label';
 export interface DynamoDbItem {
     [Attribute.PK]?: string;
     [Attribute.SK]?: string;
+    [Attribute.GSI1_PK]?: string;
+    [Attribute.GSI1_SK]?: string;
+    [Attribute.GSI2_PK]?: string;
+    [Attribute.GSI2_SK]?: string;
     [Attribute.CREATED_AT]?: string;
     [Attribute.MODIFIED_AT]?: string;
     [Attribute.DELETED_AT]?: string;

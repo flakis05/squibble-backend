@@ -26,3 +26,7 @@ export type Errorable<T> = T | Error;
 export type WithDateNow<T> = T & {
     dateNow: string;
 };
+
+export type Never<T> = {
+    [P in keyof T]?: never;
+};
