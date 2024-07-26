@@ -1,8 +1,8 @@
 import { Attribute } from './Attribute';
 import { DynamoDbItem } from './DynamoDbItem';
-import { BasePrimaryKey, GSI1PrimaryKey } from './Key';
+import { BasePrimaryKey, GSI1PrimaryKey, GSI2PrimaryKey } from './Key';
 
-type NoteTableKeys = BasePrimaryKey & GSI1PrimaryKey;
+type NoteTableKeys = BasePrimaryKey & GSI1PrimaryKey & GSI2PrimaryKey;
 type NoteRequiredItemKeys = Required<
     Pick<
         DynamoDbItem,

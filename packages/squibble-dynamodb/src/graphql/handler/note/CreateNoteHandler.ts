@@ -1,6 +1,10 @@
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
 import { WithDateNow } from '../../../api/model';
-import { createNoteBasePrimaryKey as createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import {
+    createNoteBasePrimaryKey as createNoteBasePrimaryKey,
+    createNoteGsi1PrimaryKey,
+    createNoteGsi2PrimaryKey
+} from '../../../dynamodb/key/note-key-factory';
 import { KeySupplier } from '../../util/KeySupplier';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { fromDynamoDbItem } from '../../api/note/factory/note-factory';
@@ -36,6 +40,8 @@ export class CreateNoteHandler implements ApiCallHandler<CreateNoteInput, Create
     private createNoteDynamoDbItem = (input: WithDateNow<CreateNoteInput & NoteId>): NoteDynamoDbItem => {
         const note: NoteDynamoDbItem = {
             ...createNoteBasePrimaryKey(input.noteId),
+            ...createNoteGsi1PrimaryKey(input.dateNow),
+            ...createNoteGsi2PrimaryKey(input.dateNow),
             createdAt: input.dateNow,
             modifiedAt: input.dateNow,
             noteId: input.noteId,
