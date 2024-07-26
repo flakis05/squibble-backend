@@ -1,10 +1,10 @@
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { ApiCallHandler } from '../ApiCallHandler';
 import { ArchiveNoteInput, ArchiveNoteOutput } from '../../api/note/model';
-import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
-import { WithDateNow } from '../../../api/model';
+import { createNoteBasePrimaryKey, createNoteGSI1PrimaryKey } from '../../../dynamodb/key/note-key-factory';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
+import { GSI1PrimaryKey } from '../../../dynamodb/model/Key';
 
 export class ArchiveNoteHandler implements ApiCallHandler<ArchiveNoteInput, ArchiveNoteOutput> {
     private client: DynamoDBClientWrapper;
@@ -14,7 +14,7 @@ export class ArchiveNoteHandler implements ApiCallHandler<ArchiveNoteInput, Arch
     public handle = async (input: ArchiveNoteInput): Promise<ArchiveNoteOutput> => {
         const dateNow = new Date().toISOString();
         const key = createNoteBasePrimaryKey(input.noteId);
-        const noteDynamoDbItem = this.createUpdatedNoteDynamoDbItem({ dateNow, ...input });
+        const noteDynamoDbItem = this.createUpdatedNoteDynamoDbItem(dateNow);
 
         await this.client.update(key, noteDynamoDbItem);
 
@@ -26,11 +26,11 @@ export class ArchiveNoteHandler implements ApiCallHandler<ArchiveNoteInput, Arch
     };
 
     private createUpdatedNoteDynamoDbItem = (
-        input: WithDateNow<ArchiveNoteInput>
-    ): UpdatedDynamoDbItem<NoteDynamoDbItem> => {
+        dateNow: string
+    ): UpdatedDynamoDbItem<NoteDynamoDbItem, GSI1PrimaryKey> => {
         return {
-            modifiedAt: input.dateNow,
-            ...input
+            ...createNoteGSI1PrimaryKey(dateNow),
+            modifiedAt: dateNow
         };
     };
 }

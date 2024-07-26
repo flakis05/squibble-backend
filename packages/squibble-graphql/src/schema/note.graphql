@@ -44,6 +44,14 @@ type DeleteNoteOutput {
     success: Boolean!
 }
 
+input ArchiveNoteInput {
+    noteId: ID!
+}
+
+type ArchiveNoteOutput {
+    note: Note!
+}
+
 type Query {
     note(noteId: ID!): Note
     notes: [Note!]!
@@ -54,4 +62,5 @@ type Mutation {
     addLabelToNote(input: AddLabelToNoteInput!): AddLabelToNoteOutput!
     updateNote(input: UpdateNoteInput!): UpdateNoteOutput!
     deleteNote(input: DeleteNoteInput!): DeleteNoteOutput!
+    archiveNote(input: ArchiveNoteInput!): ArchiveNoteOutput!
 }

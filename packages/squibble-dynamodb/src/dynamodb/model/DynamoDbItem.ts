@@ -22,4 +22,7 @@ export interface DynamoDbItem {
     [Attribute.DESCRIPTION]?: string;
 }
 
-export type UpdatedDynamoDbItem<T extends DynamoDbItem> = Partial<Omit<T, keyof BasePrimaryKey>>;
+export type UpdatedDynamoDbItem<T extends DynamoDbItem, K extends Partial<T> = object> = Partial<
+    Omit<T, keyof BasePrimaryKey | keyof K>
+> &
+    K;
