@@ -1,6 +1,6 @@
 import { ApiCallHandler } from '../ApiCallHandler';
 import { AddLabelToNoteInput, AddLabelToNoteOutput } from '../../api/note/model';
-import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import { createNoteBasePrimaryKey, gsi1SortKey } from '../../../dynamodb/key/note-key-factory';
 import { WithDateNow } from '../../../api/model';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import {
@@ -50,6 +50,7 @@ export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput
     private createUpdatedNoteDynamoDbItem = (
         input: WithDateNow<AddLabelToNoteInput>
     ): UpdatedDynamoDbItem<NoteDynamoDbItem> => ({
+        gsi1Sk: gsi1SortKey(input.dateNow),
         modifiedAt: input.dateNow,
         labels: {
             [input.label.labelId]: {

@@ -1,7 +1,7 @@
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { ApiCallHandler } from '../ApiCallHandler';
 import { UpdateNoteInput, UpdateNoteOutput } from '../../api/note/model';
-import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import { createNoteBasePrimaryKey, gsi1SortKey } from '../../../dynamodb/key/note-key-factory';
 import { WithDateNow } from '../../../api/model';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
@@ -29,8 +29,10 @@ export class UpdateNoteHandler implements ApiCallHandler<UpdateNoteInput, Update
         input: WithDateNow<UpdateNoteInput>
     ): UpdatedDynamoDbItem<NoteDynamoDbItem> => {
         return {
+            gsi1Sk: gsi1SortKey(input.dateNow),
             modifiedAt: input.dateNow,
-            ...input
+            title: input.title,
+            content: input.content
         };
     };
 }
