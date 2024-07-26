@@ -1,7 +1,11 @@
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { ApiCallHandler } from '../ApiCallHandler';
 import { ArchiveNoteInput, ArchiveNoteOutput } from '../../api/note/model';
-import { createNoteBasePrimaryKey, createArchivedNoteGsi1PrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import {
+    createNoteBasePrimaryKey,
+    createArchivedNoteGsi1PrimaryKey,
+    createArchivedNoteGsi2PrimaryKey
+} from '../../../dynamodb/key/note-key-factory';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
 import { GSI1PrimaryKey } from '../../../dynamodb/model/Key';
@@ -30,6 +34,7 @@ export class ArchiveNoteHandler implements ApiCallHandler<ArchiveNoteInput, Arch
     ): UpdatedDynamoDbItem<NoteDynamoDbItem, GSI1PrimaryKey> => {
         return {
             ...createArchivedNoteGsi1PrimaryKey(dateNow),
+            ...createArchivedNoteGsi2PrimaryKey(dateNow),
             modifiedAt: dateNow
         };
     };
