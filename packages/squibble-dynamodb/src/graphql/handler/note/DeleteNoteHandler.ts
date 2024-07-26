@@ -1,7 +1,7 @@
 import { DynamoDBClientWrapper } from '../../../dynamodb/wrapper/DynamoDbClientWrapper';
 import { DeleteNoteInput, DeleteNoteOutput } from '../../api/note/model';
 import { ApiCallHandler } from '../ApiCallHandler';
-import { createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
+import { createDeletedNoteGsi1PrimaryKey, createNoteBasePrimaryKey } from '../../../dynamodb/key/note-key-factory';
 import { WithDateNow } from '../../../api/model';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
@@ -27,6 +27,7 @@ export class DeleteNoteHandler implements ApiCallHandler<DeleteNoteInput, Delete
         input: WithDateNow<DeleteNoteInput>
     ): UpdatedDynamoDbItem<NoteDynamoDbItem> => {
         return {
+            ...createDeletedNoteGsi1PrimaryKey(input.dateNow),
             deletedAt: input.dateNow
         };
     };

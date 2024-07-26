@@ -7,6 +7,7 @@ export const sortKey = (noteId: ID): ID => createKey('user', '<user_id>', 'note'
 
 export const noteGsi1PartitionKey = (): ID => partitionKey();
 export const archivedNoteGsi1PartitionKey = (): ID => createKey('user', '<user_id>', 'archives');
+export const deletedNoteGsi1PartitionKey = (): ID => createKey('user', '<user_id>', 'deleted');
 export const gsi1SortKey = (timestamp: string): ID => createKey('user', '<user_id>', 'note', timestamp);
 
 export const noteGsi2PartitionKey = (): ID => partitionKey();
@@ -36,4 +37,9 @@ export const createArchivedNoteGsi1PrimaryKey = (timestamp: string): GSI1Primary
 export const createArchivedNoteGsi2PrimaryKey = (timestamp: string): GSI2PrimaryKey => ({
     gsi2Pk: archivedNoteGsi2PartitionKey(),
     gsi2Sk: gsi2SortKey(timestamp)
+});
+
+export const createDeletedNoteGsi1PrimaryKey = (timestamp: string): GSI1PrimaryKey => ({
+    gsi1Pk: deletedNoteGsi1PartitionKey(),
+    gsi1Sk: gsi1SortKey(timestamp)
 });
