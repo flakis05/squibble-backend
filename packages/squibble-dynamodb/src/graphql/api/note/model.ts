@@ -1,5 +1,5 @@
 import { CreatedModifiedAt, DeletedAt, Entity } from '../../../api/model';
-import { AddLabelInput, LabelEntity } from '../label/model';
+import { AddLabelInput, LabelEntity, LabelId } from '../label/model';
 
 export type NoteId = Entity<'noteId'>;
 
@@ -27,6 +27,11 @@ export type AddLabelToNoteInput = NoteId & {
     label: AddLabelInput;
 };
 export interface AddLabelToNoteOutput {
+    note: NoteId;
+}
+
+export type RemoveLabelFromNoteInput = NoteId & LabelId;
+export interface RemoveLabelFromNoteOutput {
     note: NoteId;
 }
 

@@ -2,6 +2,10 @@ import { Nullable } from '../../api/model';
 import { Attribute } from '../model/Attribute';
 import { DynamoDbItem } from '../model/DynamoDbItem';
 
+export type NullableRecordValues<T> = {
+    [P in keyof T]: T[P] extends Record<string, infer U> | undefined ? Record<string, U | null> : T[P];
+};
+
 export interface UpdateExpression {
     UpdateExpression: string;
     ExpressionAttributeNames: Record<string, string>;
@@ -9,15 +13,18 @@ export interface UpdateExpression {
 }
 
 const termKey = (label: string) => `#${label}`;
+const mapTermKey = (label: string, mapEntryLabel: string) => `${termKey(label)}.${termKey(mapEntryLabel)}`;
 const termValue = (label: string) => `:${label}`;
 const defaultLabel = 'attr';
 const defaultMapEntryLabel = 'mapEntry';
 
 const term = (label: string) => `${termKey(label)} = ${termValue(label)}`;
 const mapTerm = (label: string, mapEntryLabel: string) =>
-    `${termKey(label)}.${termKey(mapEntryLabel)} = ${termValue(mapEntryLabel)}`;
+    `${mapTermKey(label, mapEntryLabel)} = ${termValue(mapEntryLabel)}`;
 
-export const createUpdateExpression = <T extends DynamoDbItem>(data: Nullable<T>): UpdateExpression => {
+export const createUpdateExpression = <T extends DynamoDbItem>(
+    data: Nullable<T> | NullableRecordValues<T>
+): UpdateExpression => {
     const keys: Record<string, string> = {};
     const values: Record<string, any> = {};
     const terms: string[] = [];
@@ -36,8 +43,12 @@ export const createUpdateExpression = <T extends DynamoDbItem>(data: Nullable<T>
                 Object.entries(value).forEach(([mapEntryKey, mapEntryValue]) => {
                     const mapEntryLabel = defaultMapEntryLabel + mapEntryLabelSuffix;
                     keys[termKey(mapEntryLabel)] = mapEntryKey;
-                    values[termValue(mapEntryLabel)] = mapEntryValue;
-                    terms.push(mapTerm(label, mapEntryLabel));
+                    if (mapEntryValue === null) {
+                        deletedTerms.push(mapTermKey(label, mapEntryLabel));
+                    } else {
+                        values[termValue(mapEntryLabel)] = mapEntryValue;
+                        terms.push(mapTerm(label, mapEntryLabel));
+                    }
                     mapEntryLabelSuffix++;
                 });
             } else {

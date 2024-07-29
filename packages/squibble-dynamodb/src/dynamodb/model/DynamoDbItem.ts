@@ -1,4 +1,3 @@
-import { Nullable } from '../../api/model';
 import { Attribute } from './Attribute';
 import { Color } from './Color';
 import { BasePrimaryKey } from './Key';
@@ -24,7 +23,7 @@ export interface DynamoDbItem {
     [Attribute.DESCRIPTION]?: string;
 }
 
-export type UpdatedDynamoDbItem<T extends DynamoDbItem, K extends Partial<Nullable<T>> = object> = Partial<
+export type UpdatedDynamoDbItem<T extends DynamoDbItem, K extends Partial<Record<keyof T, unknown>> = object> = Partial<
     Omit<T, keyof BasePrimaryKey | keyof K>
 > &
     K;

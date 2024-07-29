@@ -15,6 +15,8 @@ import {
     CreateNoteOutput,
     DeleteNoteInput,
     DeleteNoteOutput,
+    RemoveLabelFromNoteInput,
+    RemoveLabelFromNoteOutput,
     UnArchiveNoteInput,
     UnArchiveNoteOutput,
     UpdateNoteInput,
@@ -52,6 +54,8 @@ import { ArchiveNoteHandler } from './graphql/handler/note/ArchiveNoteHandler';
 import { ArchiveNoteMutationCall } from './graphql/mutation/note/ArchiveNoteMutationCall';
 import { UnArchiveNoteHandler } from './graphql/handler/note/UnArchiveNoteHandler';
 import { UnArchiveNoteMutationCall } from './graphql/mutation/note/UnArchiveNoteMutationCall';
+import { RemoveLabelFromNoteMutationCall } from './graphql/mutation/note/RemoveLabelFromNoteMutationCall';
+import { RemoveLabelFromNoteHandler } from './graphql/handler/note/RemoveLabelFromNoteHandler';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -65,6 +69,7 @@ const keySupplier = new KeySupplier();
 const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 const addLabelToNoteHandler = new AddLabelToNoteHandler(advancedlientWrapper);
+const removeLabelFromNoteHandler = new RemoveLabelFromNoteHandler(advancedlientWrapper);
 const updateNoteHandler = new UpdateNoteHandler(clientWrapper);
 const archiveNoteHandler = new ArchiveNoteHandler(clientWrapper);
 const unArchiveNoteHandler = new UnArchiveNoteHandler(clientWrapper);
@@ -80,6 +85,10 @@ const createNoteMutationResolver = new MutationResolver<CreateNoteInput, CreateN
 const addLabelToNoteMutationCall = new AddLabelToNoteMutationCall(addLabelToNoteHandler);
 const addLabelToNoteMutationResolver = new MutationResolver<AddLabelToNoteInput, AddLabelToNoteOutput>(
     addLabelToNoteMutationCall
+);
+const removeLabelFromNoteMutationCall = new RemoveLabelFromNoteMutationCall(removeLabelFromNoteHandler);
+const removeLabelFromNoteMutationResolver = new MutationResolver<RemoveLabelFromNoteInput, RemoveLabelFromNoteOutput>(
+    removeLabelFromNoteMutationCall
 );
 const updateNoteMutationCall = new UpdateNoteMutationCall(updateNoteHandler);
 const updateNoteMutationResolver = new MutationResolver<UpdateNoteInput, UpdateNoteOutput>(updateNoteMutationCall);
@@ -107,6 +116,7 @@ const resolvers = {
     Mutation: {
         createNote: createNoteMutationResolver.resolve,
         addLabelToNote: addLabelToNoteMutationResolver.resolve,
+        removeLabelFromNote: removeLabelFromNoteMutationResolver.resolve,
         updateNote: updateNoteMutationResolver.resolve,
         deleteNote: deleteNoteMutationResolver.resolve,
         archiveNote: archiveNoteMutationResolver.resolve,
