@@ -52,6 +52,14 @@ type ArchiveNoteOutput {
     note: Note!
 }
 
+input UnArchiveNoteInput {
+    noteId: ID!
+}
+
+type UnArchiveNoteOutput {
+    note: Note!
+}
+
 type Query {
     note(noteId: ID!): Note
     notes: [Note!]!
@@ -63,4 +71,5 @@ type Mutation {
     updateNote(input: UpdateNoteInput!): UpdateNoteOutput!
     deleteNote(input: DeleteNoteInput!): DeleteNoteOutput!
     archiveNote(input: ArchiveNoteInput!): ArchiveNoteOutput!
+    unArchiveNote(input: UnArchiveNoteInput!): UnArchiveNoteOutput!
 }

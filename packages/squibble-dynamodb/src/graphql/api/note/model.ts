@@ -44,3 +44,8 @@ export type ArchiveNoteInput = NoteId;
 export interface ArchiveNoteOutput {
     note: NoteId;
 }
+
+export type UnArchiveNoteInput = NoteId;
+export interface UnArchiveNoteOutput {
+    note: NoteId;
+}

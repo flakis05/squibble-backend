@@ -15,6 +15,8 @@ import {
     CreateNoteOutput,
     DeleteNoteInput,
     DeleteNoteOutput,
+    UnArchiveNoteInput,
+    UnArchiveNoteOutput,
     UpdateNoteInput,
     UpdateNoteOutput
 } from './graphql/api/note/model';
@@ -48,6 +50,8 @@ import { DeleteLabelHandler } from './graphql/handler/label/DeleteLabelHandler';
 import { DeleteLabelMutationCall } from './graphql/mutation/label/DeleteLabelMutationCall';
 import { ArchiveNoteHandler } from './graphql/handler/note/ArchiveNoteHandler';
 import { ArchiveNoteMutationCall } from './graphql/mutation/note/ArchiveNoteMutationCall';
+import { UnArchiveNoteHandler } from './graphql/handler/note/UnArchiveNoteHandler';
+import { UnArchiveNoteMutationCall } from './graphql/mutation/note/UnArchiveNoteMutationCall';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -63,6 +67,7 @@ const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplie
 const addLabelToNoteHandler = new AddLabelToNoteHandler(advancedlientWrapper);
 const updateNoteHandler = new UpdateNoteHandler(clientWrapper);
 const archiveNoteHandler = new ArchiveNoteHandler(clientWrapper);
+const unArchiveNoteHandler = new UnArchiveNoteHandler(clientWrapper);
 const deleteNoteHandler = new DeleteNoteHandler(clientWrapper);
 const createLabelHandler = new CreateLabelHandler(clientWrapper, keySupplier);
 const updateLabelHandler = new UpdateLabelHandler(clientWrapper);
@@ -82,6 +87,10 @@ const deleteNoteMutationCall = new DeleteNoteMutationCall(deleteNoteHandler);
 const deleteNoteMutationResolver = new MutationResolver<DeleteNoteInput, DeleteNoteOutput>(deleteNoteMutationCall);
 const archiveNoteMutationCall = new ArchiveNoteMutationCall(archiveNoteHandler);
 const archiveNoteMutationResolver = new MutationResolver<ArchiveNoteInput, ArchiveNoteOutput>(archiveNoteMutationCall);
+const unArchiveNoteMutationCall = new UnArchiveNoteMutationCall(unArchiveNoteHandler);
+const unArchiveNoteMutationResolver = new MutationResolver<UnArchiveNoteInput, UnArchiveNoteOutput>(
+    unArchiveNoteMutationCall
+);
 const createLabelMutationCall = new CreateLabelMutationCall(createLabelHandler);
 const createLabelMutationResolver = new MutationResolver<CreateLabelInput, CreateLabelOutput>(createLabelMutationCall);
 const updateLabelMutationCall = new UpdateLabelMutationCall(updateLabelHandler);
@@ -101,6 +110,7 @@ const resolvers = {
         updateNote: updateNoteMutationResolver.resolve,
         deleteNote: deleteNoteMutationResolver.resolve,
         archiveNote: archiveNoteMutationResolver.resolve,
+        unArchiveNote: unArchiveNoteMutationResolver.resolve,
         createLabel: createLabelMutationResolver.resolve,
         updateLabel: updateLabelMutationResolver.resolve,
         deleteLabel: deleteLabelMutationResolver.resolve
