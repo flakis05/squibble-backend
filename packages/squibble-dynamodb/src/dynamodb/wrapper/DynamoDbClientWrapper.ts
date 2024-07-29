@@ -12,6 +12,7 @@ import { ItemNotFoundException } from '../exceptions/ItemNotFoundException';
 import { DynamoDbItem } from '../model/DynamoDbItem';
 import { BasePrimaryKey } from '../model/Key';
 import { createUpdateExpression } from '../util/expression-factory';
+import { Nullable } from '../../api/model';
 
 export interface GetOutput<T extends DynamoDbItem> {
     item: T;
@@ -50,7 +51,7 @@ export class DynamoDBClientWrapper {
 
     public update = async <T extends DynamoDbItem>(
         key: BasePrimaryKey,
-        entity: Omit<T, keyof BasePrimaryKey>
+        entity: Nullable<Omit<T, keyof BasePrimaryKey>>
     ): Promise<void> => {
         const { UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues } =
             createUpdateExpression(entity);

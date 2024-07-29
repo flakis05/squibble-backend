@@ -8,7 +8,8 @@ import {
 } from '../../../dynamodb/key/note-key-factory';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
-import { GSI1PrimaryKey } from '../../../dynamodb/model/Key';
+import { Attribute } from '../../../dynamodb/model/Attribute';
+import { Nullable } from '../../../api/model';
 
 export class UnArchiveNoteHandler implements ApiCallHandler<UnArchiveNoteInput, UnArchiveNoteOutput> {
     private client: DynamoDBClientWrapper;
@@ -21,7 +22,6 @@ export class UnArchiveNoteHandler implements ApiCallHandler<UnArchiveNoteInput, 
         const noteDynamoDbItem = this.createUpdatedNoteDynamoDbItem(dateNow);
 
         await this.client.update(key, noteDynamoDbItem);
-
         return {
             note: {
                 noteId: input.noteId
@@ -31,11 +31,12 @@ export class UnArchiveNoteHandler implements ApiCallHandler<UnArchiveNoteInput, 
 
     private createUpdatedNoteDynamoDbItem = (
         dateNow: string
-    ): UpdatedDynamoDbItem<NoteDynamoDbItem, GSI1PrimaryKey> => {
+    ): UpdatedDynamoDbItem<NoteDynamoDbItem, Nullable<Pick<NoteDynamoDbItem, Attribute.ARCHIVED_AT>>> => {
         return {
             ...createNoteGsi1PrimaryKey(dateNow),
             ...createNoteGsi2PrimaryKey(dateNow),
-            modifiedAt: dateNow
+            modifiedAt: dateNow,
+            archivedAt: null
         };
     };
 }

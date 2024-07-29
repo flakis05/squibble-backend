@@ -35,7 +35,8 @@ export class ArchiveNoteHandler implements ApiCallHandler<ArchiveNoteInput, Arch
         return {
             ...createArchivedNoteGsi1PrimaryKey(dateNow),
             ...createArchivedNoteGsi2PrimaryKey(dateNow),
-            modifiedAt: dateNow
+            modifiedAt: dateNow,
+            archivedAt: dateNow
         };
     };
 }

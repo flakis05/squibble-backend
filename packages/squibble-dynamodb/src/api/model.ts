@@ -30,3 +30,9 @@ export type WithDateNow<T> = T & {
 export type Never<T> = {
     [P in keyof T]?: never;
 };
+
+export type Nullable<T> = T extends object
+    ? {
+          [K in keyof T]: Nullable<T[K]>;
+      }
+    : T | null;

@@ -9,6 +9,6 @@ type NoteRequiredItemKeys = Required<
         Attribute.NOTE_ID | Attribute.CREATED_AT | Attribute.MODIFIED_AT | Attribute.CONTENT | Attribute.LABELS
     >
 >;
-type NoteOptionalItemKeys = Partial<Pick<DynamoDbItem, Attribute.DELETED_AT | Attribute.TITLE>>;
+type NoteOptionalItemKeys = Partial<Pick<DynamoDbItem, Attribute.DELETED_AT | Attribute.ARCHIVED_AT | Attribute.TITLE>>;
 
 export type NoteDynamoDbItem = NoteTableKeys & NoteRequiredItemKeys & NoteOptionalItemKeys;

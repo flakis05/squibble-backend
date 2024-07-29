@@ -8,6 +8,7 @@ export enum Attribute {
     CREATED_AT = 'createdAt',
     MODIFIED_AT = 'modifiedAt',
     DELETED_AT = 'deletedAt',
+    ARCHIVED_AT = 'archivedAt',
     NOTE_ID = 'noteId',
     LABEL_ID = 'labelId',
     TITLE = 'title',

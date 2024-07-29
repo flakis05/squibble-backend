@@ -1,3 +1,4 @@
+import { Nullable } from '../../api/model';
 import { Attribute } from '../model/Attribute';
 import { DynamoDbItem } from '../model/DynamoDbItem';
 
@@ -16,16 +17,21 @@ const term = (label: string) => `${termKey(label)} = ${termValue(label)}`;
 const mapTerm = (label: string, mapEntryLabel: string) =>
     `${termKey(label)}.${termKey(mapEntryLabel)} = ${termValue(mapEntryLabel)}`;
 
-export const createUpdateExpression = <T extends DynamoDbItem>(data: T): UpdateExpression => {
+export const createUpdateExpression = <T extends DynamoDbItem>(data: Nullable<T>): UpdateExpression => {
     const keys: Record<string, string> = {};
     const values: Record<string, any> = {};
     const terms: string[] = [];
+    const deletedTerms: string[] = [];
     let labelSuffix = 1;
     let mapEntryLabelSuffix = 1;
     Object.entries(data).forEach(([key, value]) => {
         if (value !== undefined) {
             const label = defaultLabel + labelSuffix;
-            if (typeof value === 'object' && !Array.isArray(value)) {
+            if (value === null) {
+                keys[termKey(label)] = key;
+                deletedTerms.push(termKey(label));
+                labelSuffix++;
+            } else if (typeof value === 'object' && !Array.isArray(value)) {
                 keys[termKey(label)] = key;
                 Object.entries(value).forEach(([mapEntryKey, mapEntryValue]) => {
                     const mapEntryLabel = defaultMapEntryLabel + mapEntryLabelSuffix;
@@ -42,8 +48,14 @@ export const createUpdateExpression = <T extends DynamoDbItem>(data: T): UpdateE
             }
         }
     });
+
+    let updateExpression = `SET ${terms.join(', ')}`;
+    if (deletedTerms.length !== 0) {
+        updateExpression = `${updateExpression} REMOVE ${deletedTerms.join(', ')}`;
+    }
+
     return {
-        UpdateExpression: `SET ${terms.join(', ')}`,
+        UpdateExpression: updateExpression,
         ExpressionAttributeNames: keys,
         ExpressionAttributeValues: values
     };
