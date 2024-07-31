@@ -5,12 +5,14 @@ import { WithDateNow } from '../../../api/model';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import {
     AdvancedDynamoDbClientWrapper,
+    TransactDeleteItem,
     TransactUpdateItem
 } from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { TransactWriteCommandInput } from '@aws-sdk/lib-dynamodb';
 import { Table } from '../../../dynamodb/model/Table';
 import { createUpdateExpression } from '../../../dynamodb/util/expression-factory';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
+import { createNoteLabelBasePrimaryKey } from '../../../dynamodb/key/note-label-key-factory';
 
 export class RemoveLabelFromNoteHandler implements ApiCallHandler<RemoveLabelFromNoteInput, RemoveLabelFromNoteOutput> {
     private client: AdvancedDynamoDbClientWrapper;
@@ -23,7 +25,10 @@ export class RemoveLabelFromNoteHandler implements ApiCallHandler<RemoveLabelFro
         const addLabelToNoteTransaction: TransactWriteCommandInput = {
             TransactItems: [
                 {
-                    Update: this.addLabelToNote({ dateNow, ...input })
+                    Update: this.removeLabelFromNote({ dateNow, ...input })
+                },
+                {
+                    Delete: this.deleteNoteLabelAssociation(input)
                 }
             ]
         };
@@ -46,9 +51,14 @@ export class RemoveLabelFromNoteHandler implements ApiCallHandler<RemoveLabelFro
         }
     });
 
-    private addLabelToNote = (input: WithDateNow<RemoveLabelFromNoteInput>): TransactUpdateItem => ({
+    private removeLabelFromNote = (input: WithDateNow<RemoveLabelFromNoteInput>): TransactUpdateItem => ({
         TableName: Table.BASE,
         Key: createNoteBasePrimaryKey(input.noteId),
         ...createUpdateExpression(this.createUpdatedNoteDynamoDbItem(input))
+    });
+
+    private deleteNoteLabelAssociation = (input: RemoveLabelFromNoteInput): TransactDeleteItem => ({
+        TableName: Table.BASE,
+        Key: createNoteLabelBasePrimaryKey(input.noteId, input.labelId)
     });
 }
