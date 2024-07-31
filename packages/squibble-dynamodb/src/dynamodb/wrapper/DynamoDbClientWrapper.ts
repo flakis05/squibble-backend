@@ -11,8 +11,8 @@ import {
 import { ItemNotFoundException } from '../exceptions/ItemNotFoundException';
 import { DynamoDbItem } from '../model/DynamoDbItem';
 import { BasePrimaryKey } from '../model/Key';
-import { createUpdateExpression, NullableRecordValues } from '../util/expression-factory';
-import { Nullable } from '../../api/model';
+import { createUpdateExpression } from '../util/expression-factory';
+import { Nullable, NullableRecordValues } from '../../api/model';
 
 export interface GetOutput<T extends DynamoDbItem> {
     item: T;

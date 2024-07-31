@@ -1,10 +1,6 @@
-import { Nullable } from '../../api/model';
+import { Nullable, NullableRecordValues } from '../../api/model';
 import { Attribute } from '../model/Attribute';
 import { DynamoDbItem } from '../model/DynamoDbItem';
-
-export type NullableRecordValues<T> = {
-    [P in keyof T]: T[P] extends Record<string, infer U> | undefined ? Record<string, U | null> : T[P];
-};
 
 export interface UpdateExpression {
     UpdateExpression: string;
