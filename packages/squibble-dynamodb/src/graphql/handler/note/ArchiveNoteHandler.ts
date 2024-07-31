@@ -8,7 +8,6 @@ import {
 } from '../../../dynamodb/key/note-key-factory';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
-import { GSI1PrimaryKey } from '../../../dynamodb/model/Key';
 
 export class ArchiveNoteHandler implements ApiCallHandler<ArchiveNoteInput, ArchiveNoteOutput> {
     private client: DynamoDBClientWrapper;
@@ -29,9 +28,7 @@ export class ArchiveNoteHandler implements ApiCallHandler<ArchiveNoteInput, Arch
         };
     };
 
-    private createUpdatedNoteDynamoDbItem = (
-        dateNow: string
-    ): UpdatedDynamoDbItem<NoteDynamoDbItem, GSI1PrimaryKey> => {
+    private createUpdatedNoteDynamoDbItem = (dateNow: string): UpdatedDynamoDbItem<NoteDynamoDbItem> => {
         return {
             ...createArchivedNoteGsi1PrimaryKey(dateNow),
             ...createArchivedNoteGsi2PrimaryKey(dateNow),
