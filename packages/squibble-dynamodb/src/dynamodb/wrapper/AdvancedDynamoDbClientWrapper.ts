@@ -7,14 +7,24 @@ import {
     BatchWriteCommandOutput,
     DynamoDBDocumentClient,
     NativeAttributeValue,
+    QueryCommand,
+    QueryCommandInput,
     TransactWriteCommand,
     TransactWriteCommandInput
 } from '@aws-sdk/lib-dynamodb';
 import { DynamoDbException } from '../exceptions/DynamoDbException';
-import { BasePrimaryKey } from '../model/Key';
+import {
+    BasePrimaryKey,
+    GSI1PrimaryKey,
+    GSI2PrimaryKey,
+    OptionalGSI1PrimaryKey,
+    OptionalGSI2PrimaryKey
+} from '../model/Key';
 import { BatchInput, BatchGetItem, BatchWriteItem, BatchWriteType } from './model/BatchInput';
 import { BatchGetOutput, BatchItem, BatchOutputBuilder } from './model/BatchGetOutput';
 import { ConditionCheck, Delete, Put, Update } from '@aws-sdk/client-dynamodb';
+import { DynamoDbItem } from '../model/DynamoDbItem';
+import { ItemsNotFoundException } from '../exceptions/ItemsNotFoundException';
 
 export type TransactConditionCheckItem = Omit<ConditionCheck, 'Key' | 'ExpressionAttributeValues'> & {
     Key: Record<string, NativeAttributeValue>;
@@ -34,6 +44,13 @@ export type TransactUpdateItem = Omit<Update, 'Key' | 'ExpressionAttributeValues
     ExpressionAttributeValues?: Record<string, NativeAttributeValue>;
 };
 
+export type QueryPrimaryKey = BasePrimaryKey | GSI1PrimaryKey | GSI2PrimaryKey;
+
+export interface QueryOutput<T extends DynamoDbItem> {
+    items: T[];
+    lastEvaluatedKey?: BasePrimaryKey | Required<OptionalGSI1PrimaryKey> | Required<OptionalGSI2PrimaryKey>;
+}
+
 export class AdvancedDynamoDbClientWrapper {
     private client: DynamoDBDocumentClient;
     private maxBatchGetSize: number;
@@ -43,6 +60,18 @@ export class AdvancedDynamoDbClientWrapper {
         this.maxBatchGetSize = maxBatchGetSize;
         this.maxBatchWriteSize = maxBatchWriteSize;
     }
+
+    public query = async <T extends DynamoDbItem>(input: QueryCommandInput): Promise<QueryOutput<T>> => {
+        const { Items, Count, LastEvaluatedKey } = await this.client.send(new QueryCommand(input));
+
+        if (Count === 0) {
+            throw new ItemsNotFoundException('Items not found');
+        }
+        return {
+            items: Items as T[],
+            lastEvaluatedKey: LastEvaluatedKey as QueryPrimaryKey
+        };
+    };
 
     public writeTranscation = async (input: TransactWriteCommandInput): Promise<void> => {
         await this.client.send(new TransactWriteCommand(input));

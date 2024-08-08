@@ -1,5 +1,6 @@
 import { CreatedModifiedAt, DeletedAt, Entity } from '../../../api/model';
 import { AddLabelInput, LabelEntity, LabelId } from '../label/model';
+import { Connection, SortDirection } from '../shared/model';
 
 export type NoteId = Entity<'noteId'>;
 
@@ -15,6 +16,12 @@ export type GetNoteInput = NoteId;
 export interface GetNoteOutput {
     note: NoteEntity;
 }
+export type GetNotesInput = NoteId & {
+    limit: number;
+    after?: string;
+    sort: SortNotes;
+};
+export type GetNotesOutput = Connection<NoteEntity>;
 
 export type CreateNoteInput = Omit<NoteData, 'labels'> & {
     labels?: AddLabelInput[];
@@ -53,4 +60,13 @@ export interface ArchiveNoteOutput {
 export type UnArchiveNoteInput = NoteId;
 export interface UnArchiveNoteOutput {
     note: NoteId;
+}
+
+export enum SortNotesBy {
+    MODIFIED_DATE = 'modifiedDate',
+    CREATED_DATE = 'createdDate'
+}
+export interface SortNotes {
+    direction: SortDirection;
+    by: SortNotesBy;
 }

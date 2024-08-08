@@ -12,10 +12,11 @@ import {
 import { TransactWriteCommandInput } from '@aws-sdk/lib-dynamodb';
 import { Table } from '../../../dynamodb/model/Table';
 import { createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-factory';
-import { attributeExists, createUpdateExpression } from '../../../dynamodb/util/expression-factory';
+import { createUpdateExpression } from '../../../dynamodb/util/expression-factory';
 import { Attribute } from '../../../dynamodb/model/Attribute';
 import { createNoteLabelDynamoDbItem } from '../../api/note/factory/note-label-factory';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
+import { attributeExists } from '../../../dynamodb/util/condition-expression';
 
 export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput, AddLabelToNoteOutput> {
     private client: AdvancedDynamoDbClientWrapper;

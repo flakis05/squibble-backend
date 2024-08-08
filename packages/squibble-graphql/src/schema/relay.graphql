@@ -1,0 +1,15 @@
+interface PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+    endCursor: String
+}
+
+interface Edge {
+    cursor: String!
+}
+
+interface Connection {
+    edges: [Edge!]!
+    pageInfo: PageInfo!
+}

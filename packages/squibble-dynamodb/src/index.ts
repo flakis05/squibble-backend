@@ -17,6 +17,7 @@ import {
     DeleteNoteOutput,
     RemoveLabelFromNoteInput,
     RemoveLabelFromNoteOutput,
+    SortNotesBy,
     UnArchiveNoteInput,
     UnArchiveNoteOutput,
     UpdateNoteInput,
@@ -56,6 +57,11 @@ import { UnArchiveNoteHandler } from './graphql/handler/note/UnArchiveNoteHandle
 import { UnArchiveNoteMutationCall } from './graphql/mutation/note/UnArchiveNoteMutationCall';
 import { RemoveLabelFromNoteMutationCall } from './graphql/mutation/note/RemoveLabelFromNoteMutationCall';
 import { RemoveLabelFromNoteHandler } from './graphql/handler/note/RemoveLabelFromNoteHandler';
+import { GetNotesHandler } from './graphql/handler/note/GetNotesHandler';
+import { QueryHandler } from './graphql/handler/shared/QueryHandler';
+import { Base64Encoder } from './graphql/util/Base64Encoder';
+import { GetNotesResolver } from './graphql/resolver/note/GetNotesResolver';
+import { SortDirection } from './graphql/api/shared/model';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -65,8 +71,11 @@ const maxBatchWriteSize = 25;
 const clientWrapper = new DynamoDBClientWrapper(Table.BASE, documentClient);
 const advancedlientWrapper = new AdvancedDynamoDbClientWrapper(documentClient, maxBatchGetSize, maxBatchWriteSize);
 const keySupplier = new KeySupplier();
+const base64Encoder = new Base64Encoder();
 
+const queryHandler = new QueryHandler(advancedlientWrapper, base64Encoder);
 const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
+const getNotesHandler = new GetNotesHandler(queryHandler);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 const addLabelToNoteHandler = new AddLabelToNoteHandler(advancedlientWrapper);
 const removeLabelFromNoteHandler = new RemoveLabelFromNoteHandler(advancedlientWrapper);
@@ -79,6 +88,7 @@ const updateLabelHandler = new UpdateLabelHandler(clientWrapper);
 const deleteLabelHandler = new DeleteLabelHandler(clientWrapper);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
+const getNotesResolver = new GetNotesResolver(getNotesHandler);
 
 const createNoteMutationCall = new CreateNoteMutationCall(createNoteHandler);
 const createNoteMutationResolver = new MutationResolver<CreateNoteInput, CreateNoteOutput>(createNoteMutationCall);
@@ -109,9 +119,7 @@ const deleteLabelMutationResolver = new MutationResolver<DeleteLabelInput, Delet
 const resolvers = {
     Query: {
         note: getNoteResolver.resolve,
-        notes: () => {
-            return [{ id: 1 }];
-        }
+        notes: getNotesResolver.resolve
     },
     Mutation: {
         createNote: createNoteMutationResolver.resolve,
@@ -125,7 +133,9 @@ const resolvers = {
         updateLabel: updateLabelMutationResolver.resolve,
         deleteLabel: deleteLabelMutationResolver.resolve
     },
-    Color
+    Color,
+    SortDirection,
+    SortNotesBy
 };
 
 const start = async () => {

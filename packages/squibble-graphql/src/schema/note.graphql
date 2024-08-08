@@ -1,3 +1,23 @@
+type NoteConnection implements Connection {
+    edges: [NoteEdge!]!
+    pageInfo: PageInfo!
+}
+
+type NoteEdge implements Edge {
+    cursor: String!
+    node: Note!
+}
+
+input SortNotes {
+    direction: SortDirection!
+    by: SortNotesBy!
+}
+
+enum SortNotesBy {
+    CREATED_DATE
+    MODIFIED_DATE
+}
+
 type Note implements Node {
     noteId: ID!
     createdAt: AWSDateTime!
@@ -71,7 +91,7 @@ type UnArchiveNoteOutput {
 
 type Query {
     note(noteId: ID!): Note
-    notes: [Note!]!
+    notes(first: Int!, after: String, sort: SortNotes!): NoteConnection!
 }
 
 type Mutation {
