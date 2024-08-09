@@ -24,11 +24,10 @@ export interface Connection<T> {
 
 export type QueryInputSupplier = (exclusiveStartKey?: QueryPrimaryKey) => QueryCommandInput;
 export type LastEvaluatedKeySupplier<T extends DynamoDbItem> = (item: T) => QueryPrimaryKey;
-export interface QueryRequestInput<T extends DynamoDbItem, E> {
+export interface QueryRequestInput<T extends DynamoDbItem> {
     limit: number;
     after?: string;
     queryInputSupplier: QueryInputSupplier;
-    fromDynamoDbItem: (item: T) => E;
     lastEvaluatedKeySupplier: LastEvaluatedKeySupplier<T>;
 }
-export type QueryRequestOutput<T> = Connection<T>;
+export type QueryRequestOutput<T extends DynamoDbItem> = Connection<T>;

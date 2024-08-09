@@ -1,22 +1,34 @@
 import { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
-import { QueryRequestInput, SortDirection } from '../../api/shared/model';
+import { Edge, QueryRequestInput, SortDirection } from '../../api/shared/model';
 import { ApiCallHandler } from '../ApiCallHandler';
 import { QueryHandler } from '../shared/QueryHandler';
 
-import { QueryPrimaryKey } from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
+import {
+    AdvancedDynamoDbClientWrapper,
+    QueryPrimaryKey
+} from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
-import { fromDynamoDbItem } from '../../api/note/factory/note-factory';
 import { GetNotesInput, GetNotesOutput, NoteEntity, SortNotesBy } from '../../api/note/model';
 import { Index, Table } from '../../../dynamodb/model/Table';
 import { createQueryExpressionWithSortKeyBeginsWith } from '../../../dynamodb/util/expression-factory';
 import { noteGsi1PartitionKey, noteGsi2PartitionKey } from '../../../dynamodb/key/note-key-factory';
+import { fromDynamoDbItem as fromDynamoDbItemToNoteEntity } from '../../api/note/factory/note-factory';
+import { fromDynamoDbItem as fromDynamoDbItemToLabelEntity } from '../../api/label/factory/label-factory';
 import { createKey } from '../../../dynamodb/key/key-factory';
 import { RuntimeException } from '../../exception/RuntimeException';
+import { LabelEntity } from '../../api/label/model';
+import { createLabelBasePrimaryKey } from '../../../dynamodb/key/label-key-factory';
+import { Attribute } from '../../../dynamodb/model/Attribute';
+import { LabelDynamoDbItem, LabelsAttributeValue } from '../../../dynamodb/model/Label';
+import { BatchInput, BatchGetItem, BatchInputBuilder } from '../../../dynamodb/wrapper/model/BatchInput';
+import { BatchGetOutput } from '../../../dynamodb/wrapper/model/BatchGetOutput';
 
 export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOutput> {
+    private advancedClient: AdvancedDynamoDbClientWrapper;
     private queryHandler: QueryHandler;
 
-    constructor(queryHandler: QueryHandler) {
+    constructor(advancedClient: AdvancedDynamoDbClientWrapper, queryHandler: QueryHandler) {
+        this.advancedClient = advancedClient;
         this.queryHandler = queryHandler;
     }
 
@@ -41,14 +53,18 @@ export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOu
                     throw new RuntimeException('Unsupported SortNotesBy: ' + input.sort.by);
             }
         };
-        const queryRequestInput: QueryRequestInput<NoteDynamoDbItem, NoteEntity> = {
+        const queryRequestInput: QueryRequestInput<NoteDynamoDbItem> = {
             limit: input.limit,
             after: input.after,
             queryInputSupplier,
-            fromDynamoDbItem,
             lastEvaluatedKeySupplier
         };
-        return this.queryHandler.handle(queryRequestInput);
+        const result = await this.queryHandler.handle(queryRequestInput);
+        const edges = await this.resolveEntities(result.edges);
+        return {
+            pageInfo: result.pageInfo,
+            edges
+        };
     };
 
     private sortByModifiedDateQueryInputSupplier = (
@@ -78,4 +94,64 @@ export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOu
         ScanIndexForward: sortDirection === SortDirection.ASCENDING,
         ExclusiveStartKey: exclusiveStartKey
     });
+
+    private resolveEntities = async (edges: Edge<NoteDynamoDbItem>[]): Promise<Edge<NoteEntity>[]> => {
+        const items = edges.map((edge) => edge.node);
+        const batchGetOutput = await this.getLabelDynamoDbItems(items);
+
+        return edges.map((edge) => {
+            const entity = fromDynamoDbItemToNoteEntity(edge.node);
+            this.resolveLabels(edge.node, entity, batchGetOutput);
+            return {
+                cursor: edge.cursor,
+                node: entity
+            };
+        });
+    };
+
+    private resolveLabels = (item: NoteDynamoDbItem, entity: NoteEntity, batchGetOutput: BatchGetOutput | null) => {
+        if (batchGetOutput !== null && Object.keys(item[Attribute.LABELS]).length !== 0) {
+            entity.labels = this.createNoteLabelEntities(item[Attribute.LABELS], batchGetOutput);
+        } else {
+            entity.labels = [];
+        }
+    };
+
+    private getLabelDynamoDbItems = async (items: NoteDynamoDbItem[]): Promise<BatchGetOutput | null> => {
+        const batchGetItems = this.createBatchInput(items);
+        if (batchGetItems.items.length === 0) {
+            return Promise.resolve(null);
+        }
+        return await this.advancedClient.batchGet(batchGetItems);
+    };
+
+    private createNoteLabelEntities = (
+        labelOverrides: LabelsAttributeValue,
+        batchGetOutput: BatchGetOutput
+    ): LabelEntity[] => {
+        return Object.values(labelOverrides).map((labelOverride) => {
+            const label = batchGetOutput.getItem(
+                Table.BASE,
+                createLabelBasePrimaryKey(labelOverride.labelId)
+            ) as LabelDynamoDbItem;
+            return fromDynamoDbItemToLabelEntity(label, labelOverride);
+        });
+    };
+
+    private createBatchInput = (items: NoteDynamoDbItem[]): BatchInput<BatchGetItem> => {
+        const batchGetItems = items.reduce<BatchGetItem[]>((accumulator, item) => {
+            if (Object.keys(item[Attribute.LABELS]).length !== 0) {
+                accumulator.push(...this.createBatchGetItems(item[Attribute.LABELS]));
+            }
+            return accumulator;
+        }, []);
+        return new BatchInputBuilder<BatchGetItem>().addItems(batchGetItems).build();
+    };
+
+    private createBatchGetItems = (overrideLabels: LabelsAttributeValue): BatchGetItem[] => {
+        return Object.values(overrideLabels).map((label) => ({
+            table: Table.BASE,
+            attributes: createLabelBasePrimaryKey(label.labelId)
+        }));
+    };
 }

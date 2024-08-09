@@ -32,10 +32,9 @@ export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutpu
         };
     };
 
-    private getLabels = async (overrideLabels: LabelsAttributeValue): Promise<LabelEntity[]> => {
+    private getLabelDynamoDbItems = async (overrideLabels: LabelsAttributeValue): Promise<BatchGetOutput> => {
         const batchGetItems = this.createBatchGetItems(overrideLabels);
-        const batchGetOutput = await this.advancedClient.batchGet(batchGetItems);
-        return this.createNoteLabels(overrideLabels, batchGetOutput);
+        return await this.advancedClient.batchGet(batchGetItems);
     };
 
     private createBatchGetItems = (overrideLabels: LabelsAttributeValue): BatchInput<BatchGetItem> => {
@@ -62,7 +61,8 @@ export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutpu
 
     private resolveNoteLabels = async (entity: NoteEntity, item: NoteDynamoDbItem): Promise<void> => {
         if (Object.keys(item[Attribute.LABELS]).length !== 0) {
-            entity.labels = await this.getLabels(item[Attribute.LABELS]);
+            const batchGetOutput = await this.getLabelDynamoDbItems(item[Attribute.LABELS]);
+            entity.labels = this.createNoteLabels(item[Attribute.LABELS], batchGetOutput);
         } else {
             entity.labels = [];
         }

@@ -19,16 +19,14 @@ interface QueryResult<T extends DynamoDbItem> {
     lastEvaluatedKey?: QueryPrimaryKey;
 }
 
-export class QueryHandler
-    implements ApiCallHandler<QueryRequestInput<DynamoDbItem, unknown>, QueryRequestOutput<unknown>>
-{
+export class QueryHandler implements ApiCallHandler<QueryRequestInput<DynamoDbItem>, QueryRequestOutput<DynamoDbItem>> {
     private client: AdvancedDynamoDbClientWrapper;
     private base64Encoder: Base64Encoder;
     constructor(client: AdvancedDynamoDbClientWrapper, base64Encoder: Base64Encoder) {
         this.client = client;
         this.base64Encoder = base64Encoder;
     }
-    public handle = async <T extends DynamoDbItem, E>(input: QueryRequestInput<T, E>): Promise<Connection<E>> => {
+    public handle = async <T extends DynamoDbItem>(input: QueryRequestInput<T>): Promise<Connection<T>> => {
         try {
             const { items, lastEvaluatedKey } = await this.queryAndPaginateToLimit<T>(
                 input.queryInputSupplier,
@@ -37,13 +35,12 @@ export class QueryHandler
             );
 
             if (items.length < input.limit) {
-                return this.createConnection(false, items, input.lastEvaluatedKeySupplier, input.fromDynamoDbItem);
+                return this.createConnection(false, items, input.lastEvaluatedKeySupplier);
             }
             return this.createConnection(
                 this.hasNextPage(input.limit, items, lastEvaluatedKey),
                 items.slice(0, input.limit),
-                input.lastEvaluatedKeySupplier,
-                input.fromDynamoDbItem
+                input.lastEvaluatedKeySupplier
             );
         } catch (error) {
             if (error instanceof ItemsNotFoundException) {
@@ -72,7 +69,7 @@ export class QueryHandler
         };
     };
 
-    private createEmptyConnection = <E>(): Connection<E> => {
+    private createEmptyConnection = <T extends DynamoDbItem>(): Connection<T> => {
         return {
             edges: [],
             pageInfo: {
@@ -82,15 +79,14 @@ export class QueryHandler
         };
     };
 
-    private createConnection = <T extends DynamoDbItem, E>(
+    private createConnection = <T extends DynamoDbItem>(
         hasNextPage: boolean,
         items: T[],
-        lastEvaluatedKeySupplier: LastEvaluatedKeySupplier<T>,
-        fromDynamoDbItem: (item: T) => E
-    ): Connection<E> => {
+        lastEvaluatedKeySupplier: LastEvaluatedKeySupplier<T>
+    ): Connection<T> => {
         return {
             edges: items.map((item) => ({
-                node: fromDynamoDbItem(item),
+                node: item,
                 cursor: this.base64Encoder.encode<QueryPrimaryKey>(lastEvaluatedKeySupplier(item))
             })),
             pageInfo: {
@@ -102,7 +98,7 @@ export class QueryHandler
         };
     };
 
-    private hasNextPage = <E>(limit: number, result: E[], lastEvaluatedKey?: QueryPrimaryKey) => {
+    private hasNextPage = <T>(limit: number, result: T[], lastEvaluatedKey?: QueryPrimaryKey) => {
         return limit < result.length || lastEvaluatedKey !== undefined;
     };
 }

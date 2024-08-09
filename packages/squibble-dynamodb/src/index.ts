@@ -75,7 +75,7 @@ const base64Encoder = new Base64Encoder();
 
 const queryHandler = new QueryHandler(advancedlientWrapper, base64Encoder);
 const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
-const getNotesHandler = new GetNotesHandler(queryHandler);
+const getNotesHandler = new GetNotesHandler(advancedlientWrapper, queryHandler);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 const addLabelToNoteHandler = new AddLabelToNoteHandler(advancedlientWrapper);
 const removeLabelFromNoteHandler = new RemoveLabelFromNoteHandler(advancedlientWrapper);
