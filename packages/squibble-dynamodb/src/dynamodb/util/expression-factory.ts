@@ -1,4 +1,4 @@
-import { Nullable, NullableRecordValues } from '../../api/model';
+import { NullableObjectValues } from '../../api/model';
 import { RuntimeException } from '../../graphql/exception/RuntimeException';
 import { Attribute } from '../model/Attribute';
 import { DynamoDbItem } from '../model/DynamoDbItem';
@@ -30,7 +30,7 @@ const mapTerm = (label: string, mapEntryLabel: string) =>
     `${mapTermKey(label, mapEntryLabel)} = ${termValue(mapEntryLabel)}`;
 
 export const createUpdateExpression = <T extends DynamoDbItem>(
-    data: Nullable<T> | NullableRecordValues<T>
+    data: Partial<NullableObjectValues<Omit<T, keyof BasePrimaryKey>>>
 ): UpdateExpression => {
     const keys: Record<string, string> = {};
     const values: Record<string, any> = {};

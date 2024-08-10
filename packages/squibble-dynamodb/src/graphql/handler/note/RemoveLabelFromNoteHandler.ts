@@ -1,7 +1,7 @@
 import { ApiCallHandler } from '../ApiCallHandler';
 import { RemoveLabelFromNoteInput, RemoveLabelFromNoteOutput } from '../../api/note/model';
 import { createNoteBasePrimaryKey, gsi1SortKey } from '../../../dynamodb/key/note-key-factory';
-import { WithDateNow } from '../../../api/model';
+import { NullableObjectValues, WithDateNow } from '../../../api/model';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import {
     AdvancedDynamoDbClientWrapper,
@@ -13,6 +13,7 @@ import { Table } from '../../../dynamodb/model/Table';
 import { createUpdateExpression } from '../../../dynamodb/util/expression-factory';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
 import { createNoteLabelBasePrimaryKey } from '../../../dynamodb/key/note-label-key-factory';
+import { Attribute } from '../../../dynamodb/model/Attribute';
 
 export class RemoveLabelFromNoteHandler implements ApiCallHandler<RemoveLabelFromNoteInput, RemoveLabelFromNoteOutput> {
     private client: AdvancedDynamoDbClientWrapper;
@@ -43,7 +44,7 @@ export class RemoveLabelFromNoteHandler implements ApiCallHandler<RemoveLabelFro
 
     private createUpdatedNoteDynamoDbItem = (
         input: WithDateNow<RemoveLabelFromNoteInput>
-    ): UpdatedDynamoDbItem<NoteDynamoDbItem, { labels: Record<string, null> }> => ({
+    ): UpdatedDynamoDbItem<NoteDynamoDbItem, NullableObjectValues<Pick<NoteDynamoDbItem, Attribute.LABELS>>> => ({
         gsi1Sk: gsi1SortKey(input.dateNow),
         modifiedAt: input.dateNow,
         labels: {
@@ -54,7 +55,7 @@ export class RemoveLabelFromNoteHandler implements ApiCallHandler<RemoveLabelFro
     private removeLabelFromNote = (input: WithDateNow<RemoveLabelFromNoteInput>): TransactUpdateItem => ({
         TableName: Table.BASE,
         Key: createNoteBasePrimaryKey(input.noteId),
-        ...createUpdateExpression(this.createUpdatedNoteDynamoDbItem(input))
+        ...createUpdateExpression<NoteDynamoDbItem>(this.createUpdatedNoteDynamoDbItem(input))
     });
 
     private deleteNoteLabelAssociation = (input: RemoveLabelFromNoteInput): TransactDeleteItem => ({

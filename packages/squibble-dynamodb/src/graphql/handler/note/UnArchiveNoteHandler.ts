@@ -9,7 +9,7 @@ import {
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
 import { UpdatedDynamoDbItem } from '../../../dynamodb/model/DynamoDbItem';
 import { Attribute } from '../../../dynamodb/model/Attribute';
-import { Nullable } from '../../../api/model';
+import { NullableObjectValues } from '../../../api/model';
 
 export class UnArchiveNoteHandler implements ApiCallHandler<UnArchiveNoteInput, UnArchiveNoteOutput> {
     private client: DynamoDBClientWrapper;
@@ -31,7 +31,7 @@ export class UnArchiveNoteHandler implements ApiCallHandler<UnArchiveNoteInput, 
 
     private createUpdatedNoteDynamoDbItem = (
         dateNow: string
-    ): UpdatedDynamoDbItem<NoteDynamoDbItem, Nullable<Pick<NoteDynamoDbItem, Attribute.ARCHIVED_AT>>> => {
+    ): UpdatedDynamoDbItem<NoteDynamoDbItem, NullableObjectValues<Pick<NoteDynamoDbItem, Attribute.ARCHIVED_AT>>> => {
         return {
             ...createNoteGsi1PrimaryKey(dateNow),
             ...createNoteGsi2PrimaryKey(dateNow),
