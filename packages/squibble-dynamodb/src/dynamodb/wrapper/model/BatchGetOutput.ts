@@ -1,3 +1,4 @@
+import { Nullable } from '../../../api/model';
 import { DynamoDbItem } from '../../model/DynamoDbItem';
 import { BasePrimaryKey } from '../../model/Key';
 import { createBatchItemId } from './util';
@@ -12,12 +13,12 @@ export class BatchGetOutput {
         this.items = items;
     }
 
-    public getItem = (table: string, key: BasePrimaryKey): BatchItem | null => {
+    public getItem = (table: string, key: BasePrimaryKey): Nullable<BatchItem> => {
         const itemKey = createBatchItemId(key);
         return this.items[table]?.[itemKey] ?? null;
     };
 
-    public getItems = (table: string): BatchItems | null => {
+    public getItems = (table: string): Nullable<BatchItems> => {
         return this.items[table] ?? null;
     };
 }

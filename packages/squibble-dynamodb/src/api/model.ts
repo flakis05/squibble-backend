@@ -32,5 +32,7 @@ export type Never<T> = {
 };
 
 export type NullableObjectValues<T extends object> = {
-    [K in keyof T]: T[K] extends Record<infer X, infer Y> ? Record<X, Y | null> | null : T[K] | null;
+    [K in keyof T]: T[K] extends Record<infer X, infer Y> ? Nullable<Record<X, Nullable<Y>>> : Nullable<T[K]>;
 };
+
+export type Nullable<T> = T | null;

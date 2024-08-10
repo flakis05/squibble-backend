@@ -22,6 +22,7 @@ import { Attribute } from '../../../dynamodb/model/Attribute';
 import { LabelDynamoDbItem, LabelsAttributeValue } from '../../../dynamodb/model/Label';
 import { BatchInput, BatchGetItem, BatchInputBuilder } from '../../../dynamodb/wrapper/model/BatchInput';
 import { BatchGetOutput } from '../../../dynamodb/wrapper/model/BatchGetOutput';
+import { Nullable } from '../../../api/model';
 
 export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOutput> {
     private advancedClient: AdvancedDynamoDbClientWrapper;
@@ -109,7 +110,7 @@ export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOu
         });
     };
 
-    private resolveLabels = (item: NoteDynamoDbItem, entity: NoteEntity, batchGetOutput: BatchGetOutput | null) => {
+    private resolveLabels = (item: NoteDynamoDbItem, entity: NoteEntity, batchGetOutput: Nullable<BatchGetOutput>) => {
         if (batchGetOutput !== null && Object.keys(item[Attribute.LABELS]).length !== 0) {
             entity.labels = this.createNoteLabelEntities(item[Attribute.LABELS], batchGetOutput);
         } else {
@@ -117,7 +118,7 @@ export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOu
         }
     };
 
-    private getLabelDynamoDbItems = async (items: NoteDynamoDbItem[]): Promise<BatchGetOutput | null> => {
+    private getLabelDynamoDbItems = async (items: NoteDynamoDbItem[]): Promise<Nullable<BatchGetOutput>> => {
         const batchGetItems = this.createBatchInput(items);
         if (batchGetItems.items.length === 0) {
             return Promise.resolve(null);
