@@ -1,4 +1,5 @@
 import { CreatedModifiedAt, DeletedAt, Entity } from '../../../api/model';
+import { NoteStatus } from '../../../dynamodb/model/Note';
 import { AddLabelInput, LabelEntity, LabelId } from '../label/model';
 import { Connection, SortDirection } from '../shared/model';
 
@@ -16,11 +17,17 @@ export type GetNoteInput = NoteId;
 export interface GetNoteOutput {
     note: NoteEntity;
 }
-export type GetNotesInput = NoteId & {
+type GetNotesInput = NoteId & {
     limit: number;
     after?: string;
-    sort: SortNotes;
+    sort: SortActiveNotes;
+    status: NoteStatus;
 };
+
+export type GetActiveNotesInput = GetNotesInput & {
+    status: Extract<NoteStatus, 'active' | 'archived'>;
+};
+
 export type GetNotesOutput = Connection<NoteEntity>;
 
 export type CreateNoteInput = Omit<NoteData, 'labels'> & {
@@ -62,11 +69,11 @@ export interface UnArchiveNoteOutput {
     note: NoteId;
 }
 
-export enum SortNotesBy {
+export enum SortActiveNotesBy {
     MODIFIED_DATE = 'modifiedDate',
     CREATED_DATE = 'createdDate'
 }
-export interface SortNotes {
+export interface SortActiveNotes {
     direction: SortDirection;
-    by: SortNotesBy;
+    by: SortActiveNotesBy;
 }

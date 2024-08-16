@@ -8,12 +8,12 @@ type NoteEdge implements Edge {
     node: Note!
 }
 
-input SortNotes {
+input SortActiveNotes {
     direction: SortDirection!
-    by: SortNotesBy!
+    by: SortActiveNotesBy!
 }
 
-enum SortNotesBy {
+enum SortActiveNotesBy {
     CREATED_DATE
     MODIFIED_DATE
 }
@@ -91,7 +91,8 @@ type UnArchiveNoteOutput {
 
 type Query {
     note(noteId: ID!): Note
-    notes(first: Int!, after: String, sort: SortNotes!): NoteConnection!
+    notes(first: Int!, after: String, sort: SortActiveNotes!): NoteConnection!
+    archives(first: Int!, after: String, sort: SortActiveNotes!): NoteConnection!
 }
 
 type Mutation {

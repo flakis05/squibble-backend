@@ -12,3 +12,5 @@ type NoteRequiredItemKeys = Required<
 type NoteOptionalItemKeys = Partial<Pick<DynamoDbItem, Attribute.DELETED_AT | Attribute.ARCHIVED_AT | Attribute.TITLE>>;
 
 export type NoteDynamoDbItem = NoteTableKeys & NoteRequiredItemKeys & NoteOptionalItemKeys;
+
+export type NoteStatus = 'active' | 'archived' | 'deleted';

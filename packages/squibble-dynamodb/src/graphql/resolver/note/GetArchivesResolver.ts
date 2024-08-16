@@ -2,7 +2,7 @@ import { Resolver } from '../../../apollo/Resolver';
 import { GetNotesOutput, GetActiveNotesInput } from '../../api/note/model';
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
 
-export class GetNotesResolver implements Resolver<GetNotesOutput> {
+export class GetArchivesResolver implements Resolver<GetNotesOutput> {
     private handler: ApiCallHandler<GetActiveNotesInput, GetNotesOutput>;
 
     constructor(handler: ApiCallHandler<GetActiveNotesInput, GetNotesOutput>) {
@@ -15,7 +15,7 @@ export class GetNotesResolver implements Resolver<GetNotesOutput> {
             limit: args.first,
             after: args.after,
             sort: args.sort,
-            status: 'active'
+            status: 'archived'
         };
         return await this.handler.handle(input);
     };
