@@ -11,9 +11,14 @@ interface LabelData {
 
 export type LabelEntity = LabelId & CreatedAt & LabelData;
 
-export type AddLabelInput = LabelId & Partial<Pick<LabelData, 'color'>>;
+export type GetLabelInput = LabelId;
+export interface GetLabelOutput {
+    label: LabelEntity;
+}
 
 export type CreateLabelInput = LabelData;
+
+export type AddLabelInput = LabelId & Partial<Pick<LabelData, 'color'>>;
 
 export type UpdateLabelInput = LabelId & Partial<LabelData>;
 export interface UpdateLabelOutput {

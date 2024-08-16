@@ -62,6 +62,10 @@ import { QueryHandler } from './graphql/handler/shared/QueryHandler';
 import { Base64Encoder } from './graphql/util/Base64Encoder';
 import { GetNotesResolver } from './graphql/resolver/note/GetNotesResolver';
 import { SortDirection } from './graphql/api/shared/model';
+import { getApolloContext } from './graphql/context/ApolloContext';
+import DataLoader from 'dataloader';
+import { GetLabelDataLoader } from './graphql/dataloader/GetLabelDataLoader';
+import { GetLabelsResolver } from './graphql/resolver/label/GetLabelsResolver';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -73,9 +77,11 @@ const advancedlientWrapper = new AdvancedDynamoDbClientWrapper(documentClient, m
 const keySupplier = new KeySupplier();
 const base64Encoder = new Base64Encoder();
 
+const getLabelDataLoader = new GetLabelDataLoader(advancedlientWrapper);
+
 const queryHandler = new QueryHandler(advancedlientWrapper, base64Encoder);
 const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
-const getNotesHandler = new GetNotesHandler(advancedlientWrapper, queryHandler);
+const getNotesHandler = new GetNotesHandler(queryHandler);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 const addLabelToNoteHandler = new AddLabelToNoteHandler(advancedlientWrapper);
 const removeLabelFromNoteHandler = new RemoveLabelFromNoteHandler(advancedlientWrapper);
@@ -88,6 +94,7 @@ const updateLabelHandler = new UpdateLabelHandler(clientWrapper);
 const deleteLabelHandler = new DeleteLabelHandler(clientWrapper);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
+const getLabelsResolver = new GetLabelsResolver();
 const getNotesResolver = new GetNotesResolver(getNotesHandler);
 
 const createNoteMutationCall = new CreateNoteMutationCall(createNoteHandler);
@@ -133,6 +140,9 @@ const resolvers = {
         updateLabel: updateLabelMutationResolver.resolve,
         deleteLabel: deleteLabelMutationResolver.resolve
     },
+    Note: {
+        labels: getLabelsResolver.resolve
+    },
     Color,
     SortDirection,
     SortNotesBy
@@ -149,7 +159,12 @@ const start = async () => {
         introspection: process.env.NODE_ENV !== 'production'
     });
     const { url } = await startStandaloneServer(server, {
-        listen: { port: 4000 }
+        listen: { port: 4000 },
+        context: async () => {
+            return getApolloContext({
+                GetLabel: new DataLoader(getLabelDataLoader.load)
+            });
+        }
     });
     console.log(`🚀 Server ready at ${url}`);
 };
