@@ -11,13 +11,25 @@ import { client } from '../client';
 import { Attribute } from '../model/Attribute';
 import { initializeItemsInTable } from './table-item-initializer';
 import { CreateLabelInput, CreateLabelOutput } from '../../graphql/api/label/model';
-import { CreateNoteInput, CreateNoteOutput } from '../../graphql/api/note/model';
+import {
+    AddLabelToNoteInput,
+    AddLabelToNoteOutput,
+    ArchiveNoteInput,
+    ArchiveNoteOutput,
+    CreateNoteInput,
+    CreateNoteOutput,
+    DeleteNoteInput,
+    DeleteNoteOutput
+} from '../../graphql/api/note/model';
 import { ApiCallHandler } from '../../graphql/handler/ApiCallHandler';
 import { Index, Table } from '../model/Table';
 
 export const initializeDynamoDbTable = async (
     createNoteHandler: ApiCallHandler<CreateNoteInput, CreateNoteOutput>,
-    createLabelHandler: ApiCallHandler<CreateLabelInput, CreateLabelOutput>
+    createLabelHandler: ApiCallHandler<CreateLabelInput, CreateLabelOutput>,
+    addLabelToNoteHandler: ApiCallHandler<AddLabelToNoteInput, AddLabelToNoteOutput>,
+    archiveNoteHandler: ApiCallHandler<ArchiveNoteInput, ArchiveNoteOutput>,
+    deleteNoteHandler: ApiCallHandler<DeleteNoteInput, DeleteNoteOutput>
 ): Promise<void> => {
     console.log('Initializing DynamoDb tables');
     const createTableCommandInput: CreateTableCommandInput = createTableRequest();
@@ -25,7 +37,13 @@ export const initializeDynamoDbTable = async (
     try {
         await client.send(new CreateTableCommand(createTableCommandInput));
         await waitUntilTableExists({ client, maxWaitTime: 30 }, describeTableCommandInput);
-        initializeItemsInTable(createNoteHandler, createLabelHandler);
+        await initializeItemsInTable(
+            createNoteHandler,
+            createLabelHandler,
+            addLabelToNoteHandler,
+            archiveNoteHandler,
+            deleteNoteHandler
+        );
         console.log('Initialized DynamoDb tables');
     } catch (e) {
         if (e instanceof Error) {

@@ -153,7 +153,13 @@ const resolvers = {
 
 const start = async () => {
     if (process.env.NODE_ENV === 'development') {
-        await initializeDynamoDbTable(createNoteHandler, createLabelHandler);
+        await initializeDynamoDbTable(
+            createNoteHandler,
+            createLabelHandler,
+            addLabelToNoteHandler,
+            archiveNoteHandler,
+            deleteNoteHandler
+        );
     }
 
     const server = new ApolloServer({
