@@ -17,14 +17,14 @@ export type GetNoteInput = NoteId;
 export interface GetNoteOutput {
     note: NoteEntity;
 }
-type GetNotesInput = NoteId & {
+type GetNotesInputBase = NoteId & {
     limit: number;
     after?: string;
-    sort: SortActiveNotes;
+    sort: SortNotes;
     status: NoteStatus;
 };
 
-export type GetActiveNotesInput = GetNotesInput & {
+export type GetNotesInput = GetNotesInputBase & {
     status: Extract<NoteStatus, 'active' | 'archived'>;
 };
 
@@ -69,11 +69,11 @@ export interface UnArchiveNoteOutput {
     note: NoteId;
 }
 
-export enum SortActiveNotesBy {
+export enum SortNotesBy {
     MODIFIED_DATE = 'modifiedDate',
     CREATED_DATE = 'createdDate'
 }
-export interface SortActiveNotes {
+export interface SortNotes {
     direction: SortDirection;
-    by: SortActiveNotesBy;
+    by: SortNotesBy;
 }

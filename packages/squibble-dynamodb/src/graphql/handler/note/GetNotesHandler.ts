@@ -5,7 +5,7 @@ import { QueryHandler } from '../shared/QueryHandler';
 
 import { QueryPrimaryKey } from '../../../dynamodb/wrapper/AdvancedDynamoDbClientWrapper';
 import { NoteDynamoDbItem } from '../../../dynamodb/model/Note';
-import { GetActiveNotesInput, GetNotesOutput, SortActiveNotesBy } from '../../api/note/model';
+import { GetNotesInput, GetNotesOutput, SortNotesBy } from '../../api/note/model';
 import { Index, Table } from '../../../dynamodb/model/Table';
 import { createQueryExpressionWithSortKeyBeginsWith } from '../../../dynamodb/util/expression-factory';
 import {
@@ -18,9 +18,9 @@ import { fromDynamoDbItem as fromDynamoDbItemToNoteEntity } from '../../api/note
 import { createKey } from '../../../dynamodb/key/key-factory';
 import { RuntimeException } from '../../exception/RuntimeException';
 
-export class GetActiveNotesHandler implements ApiCallHandler<GetActiveNotesInput, GetNotesOutput> {
+export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOutput> {
     private queryHandler: QueryHandler;
-    private static PARTITION_KEY_SUPPLIER: Record<GetActiveNotesInput['status'], Record<SortActiveNotesBy, string>> = {
+    private static PARTITION_KEY_SUPPLIER: Record<GetNotesInput['status'], Record<SortNotesBy, string>> = {
         active: {
             modifiedDate: noteGsi1PartitionKey(),
             createdDate: noteGsi2PartitionKey()
@@ -34,16 +34,16 @@ export class GetActiveNotesHandler implements ApiCallHandler<GetActiveNotesInput
         this.queryHandler = queryHandler;
     }
 
-    public handle = async (input: GetActiveNotesInput): Promise<GetNotesOutput> => {
+    public handle = async (input: GetNotesInput): Promise<GetNotesOutput> => {
         const queryInputSupplier = (exclusiveStartKey?: QueryPrimaryKey) => {
             switch (input.sort.by) {
-                case SortActiveNotesBy.MODIFIED_DATE:
+                case SortNotesBy.MODIFIED_DATE:
                     return this.sortByModifiedDateQueryInputSupplier(
                         input.sort.direction,
                         input.status,
                         exclusiveStartKey
                     );
-                case SortActiveNotesBy.CREATED_DATE:
+                case SortNotesBy.CREATED_DATE:
                     return this.sortByCreatedDateQueryInputSupplier(
                         input.sort.direction,
                         input.status,
@@ -55,9 +55,9 @@ export class GetActiveNotesHandler implements ApiCallHandler<GetActiveNotesInput
         };
         const lastEvaluatedKeySupplier = (item: NoteDynamoDbItem): QueryPrimaryKey => {
             switch (input.sort.by) {
-                case SortActiveNotesBy.MODIFIED_DATE:
+                case SortNotesBy.MODIFIED_DATE:
                     return { gsi1Pk: item.gsi1Pk, gsi1Sk: item.gsi1Sk };
-                case SortActiveNotesBy.CREATED_DATE:
+                case SortNotesBy.CREATED_DATE:
                     return { gsi2Pk: item.gsi2Pk, gsi2Sk: item.gsi2Sk };
                 default:
                     throw new RuntimeException('Unsupported SortActiveNotesBy: ' + input.sort.by);
@@ -81,13 +81,13 @@ export class GetActiveNotesHandler implements ApiCallHandler<GetActiveNotesInput
 
     private sortByModifiedDateQueryInputSupplier = (
         sortDirection: SortDirection,
-        status: GetActiveNotesInput['status'],
+        status: GetNotesInput['status'],
         exclusiveStartKey?: QueryPrimaryKey
     ): QueryCommandInput => ({
         TableName: Table.BASE,
         IndexName: Index.ONE,
         ...createQueryExpressionWithSortKeyBeginsWith({
-            gsi1Pk: GetActiveNotesHandler.PARTITION_KEY_SUPPLIER[status][SortActiveNotesBy.MODIFIED_DATE],
+            gsi1Pk: GetNotesHandler.PARTITION_KEY_SUPPLIER[status][SortNotesBy.MODIFIED_DATE],
             gsi1Sk: createKey('user', '<user_id>', 'note')
         }),
         ScanIndexForward: sortDirection === SortDirection.ASCENDING,
@@ -96,13 +96,13 @@ export class GetActiveNotesHandler implements ApiCallHandler<GetActiveNotesInput
 
     private sortByCreatedDateQueryInputSupplier = (
         sortDirection: SortDirection,
-        status: GetActiveNotesInput['status'],
+        status: GetNotesInput['status'],
         exclusiveStartKey?: QueryPrimaryKey
     ): QueryCommandInput => ({
         TableName: Table.BASE,
         IndexName: Index.TWO,
         ...createQueryExpressionWithSortKeyBeginsWith({
-            gsi2Pk: GetActiveNotesHandler.PARTITION_KEY_SUPPLIER[status][SortActiveNotesBy.CREATED_DATE],
+            gsi2Pk: GetNotesHandler.PARTITION_KEY_SUPPLIER[status][SortNotesBy.CREATED_DATE],
             gsi2Sk: createKey('user', '<user_id>', 'note')
         }),
         ScanIndexForward: sortDirection === SortDirection.ASCENDING,

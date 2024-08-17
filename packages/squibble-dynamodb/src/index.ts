@@ -17,7 +17,7 @@ import {
     DeleteNoteOutput,
     RemoveLabelFromNoteInput,
     RemoveLabelFromNoteOutput,
-    SortActiveNotesBy,
+    SortNotesBy,
     UnArchiveNoteInput,
     UnArchiveNoteOutput,
     UpdateNoteInput,
@@ -57,7 +57,7 @@ import { UnArchiveNoteHandler } from './graphql/handler/note/UnArchiveNoteHandle
 import { UnArchiveNoteMutationCall } from './graphql/mutation/note/UnArchiveNoteMutationCall';
 import { RemoveLabelFromNoteMutationCall } from './graphql/mutation/note/RemoveLabelFromNoteMutationCall';
 import { RemoveLabelFromNoteHandler } from './graphql/handler/note/RemoveLabelFromNoteHandler';
-import { GetActiveNotesHandler } from './graphql/handler/note/GetActiveNotesHandler';
+import { GetNotesHandler } from './graphql/handler/note/GetNotesHandler';
 import { QueryHandler } from './graphql/handler/shared/QueryHandler';
 import { Base64Encoder } from './graphql/util/Base64Encoder';
 import { GetNotesResolver } from './graphql/resolver/note/GetNotesResolver';
@@ -82,7 +82,7 @@ const getLabelDataLoader = new GetLabelDataLoader(advancedlientWrapper);
 
 const queryHandler = new QueryHandler(advancedlientWrapper, base64Encoder);
 const getNoteHandler = new GetNoteHandler(clientWrapper, advancedlientWrapper);
-const getActiveNotesHandler = new GetActiveNotesHandler(queryHandler);
+const getActiveNotesHandler = new GetNotesHandler(queryHandler);
 const createNoteHandler = new CreateNoteHandler(advancedlientWrapper, keySupplier);
 const addLabelToNoteHandler = new AddLabelToNoteHandler(advancedlientWrapper);
 const removeLabelFromNoteHandler = new RemoveLabelFromNoteHandler(advancedlientWrapper);
@@ -148,7 +148,7 @@ const resolvers = {
     },
     Color,
     SortDirection,
-    SortActiveNotesBy
+    SortNotesBy
 };
 
 const start = async () => {
