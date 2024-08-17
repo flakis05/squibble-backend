@@ -16,6 +16,10 @@ export interface DeletedAt {
     deletedAt?: string;
 }
 
+export interface ArchivedAt {
+    archivedAt?: string;
+}
+
 export interface CreatedModifiedAt {
     createdAt: string;
     modifiedAt: string;

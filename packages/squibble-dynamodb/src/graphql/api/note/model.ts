@@ -1,4 +1,4 @@
-import { CreatedModifiedAt, DeletedAt, Entity } from '../../../api/model';
+import { ArchivedAt, CreatedModifiedAt, DeletedAt, Entity } from '../../../api/model';
 import { NoteStatus } from '../../../dynamodb/model/Note';
 import { AddLabelInput, LabelEntity, LabelId } from '../label/model';
 import { Connection, SortDirection } from '../shared/model';
@@ -11,7 +11,7 @@ interface NoteData {
     labels?: LabelEntity[];
 }
 
-export type NoteEntity = NoteId & CreatedModifiedAt & DeletedAt & NoteData;
+export type NoteEntity = NoteId & CreatedModifiedAt & DeletedAt & ArchivedAt & NoteData;
 
 export type GetNoteInput = NoteId;
 export interface GetNoteOutput {
