@@ -28,6 +28,10 @@ export type GetNotesInput = GetNotesInputBase & {
     status: Extract<NoteStatus, 'active' | 'archived'>;
 };
 
+export type GetDeletedNotesInput = Omit<GetNotesInputBase, 'sort' | 'status'> & {
+    sort: SortDeletedNotes;
+};
+
 export type GetNotesOutput = Connection<NoteEntity>;
 
 export type CreateNoteInput = Omit<NoteData, 'labels'> & {
@@ -76,4 +80,12 @@ export enum SortNotesBy {
 export interface SortNotes {
     direction: SortDirection;
     by: SortNotesBy;
+}
+
+export enum SortDeletedNotesBy {
+    DELETED_DATE = 'deletedDate'
+}
+export interface SortDeletedNotes {
+    direction: SortDirection;
+    by: SortDeletedNotesBy;
 }

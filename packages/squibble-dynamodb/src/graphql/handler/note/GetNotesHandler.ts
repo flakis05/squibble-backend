@@ -50,7 +50,7 @@ export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOu
                         exclusiveStartKey
                     );
                 default:
-                    throw new RuntimeException('Unsupported SortActiveNotesBy: ' + input.sort.by);
+                    throw new RuntimeException(`Unsupported SortNotesBy: ${input.sort.by}`);
             }
         };
         const lastEvaluatedKeySupplier = (item: NoteDynamoDbItem): QueryPrimaryKey => {
@@ -60,7 +60,7 @@ export class GetNotesHandler implements ApiCallHandler<GetNotesInput, GetNotesOu
                 case SortNotesBy.CREATED_DATE:
                     return { gsi2Pk: item.gsi2Pk, gsi2Sk: item.gsi2Sk };
                 default:
-                    throw new RuntimeException('Unsupported SortActiveNotesBy: ' + input.sort.by);
+                    throw new RuntimeException(`Unsupported SortNotesBy: ${input.sort.by}`);
             }
         };
         const queryRequestInput: QueryRequestInput<NoteDynamoDbItem> = {

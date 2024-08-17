@@ -18,6 +18,15 @@ enum SortNotesBy {
     MODIFIED_DATE
 }
 
+input SortDeletedNotes {
+    direction: SortDirection!
+    by: SortDeletedNotesBy!
+}
+
+enum SortDeletedNotesBy {
+    DELETED_DATE
+}
+
 type Note implements Node {
     noteId: ID!
     createdAt: AWSDateTime!
@@ -93,6 +102,7 @@ type Query {
     note(noteId: ID!): Note
     notes(first: Int!, after: String, sort: SortNotes!): NoteConnection!
     archives(first: Int!, after: String, sort: SortNotes!): NoteConnection!
+    deletedNotes(first: Int!, after: String, sort: SortDeletedNotes!): NoteConnection!
 }
 
 type Mutation {

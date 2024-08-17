@@ -60,7 +60,7 @@ const archiveAndDeleteSomeNotes = async (
     deleteNoteHandler: ApiCallHandler<DeleteNoteInput, DeleteNoteOutput>
 ) => {
     const notesToArchive = getRandomDistinctElements<NoteId>(notes, 30, 50);
-    const notesToDelete = getRandomDistinctElements<NoteId>(notesToArchive, 10, 10);
+    const notesToDelete = getRandomDistinctElements<NoteId>(notesToArchive, 25, 50);
     await archiveNotes(
         notesToArchive.filter((note) => !notesToDelete.includes(note)),
         archiveNoteHandler
