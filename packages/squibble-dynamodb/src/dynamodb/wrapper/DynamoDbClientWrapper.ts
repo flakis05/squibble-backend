@@ -54,7 +54,7 @@ export class DynamoDBClientWrapper {
         entity: NullableObjectValues<Omit<T, keyof BasePrimaryKey>>
     ): Promise<void> => {
         const { UpdateExpression, ExpressionAttributeNames, ExpressionAttributeValues } =
-            createUpdateExpression(entity);
+            createUpdateExpression<T>(entity);
         const input: UpdateCommandInput = {
             TableName: this.tableName,
             Key: key,

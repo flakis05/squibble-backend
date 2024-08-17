@@ -71,7 +71,7 @@ export class AddLabelToNoteHandler implements ApiCallHandler<AddLabelToNoteInput
     private addLabelToNote = (input: WithDateNow<AddLabelToNoteInput>): TransactUpdateItem => ({
         TableName: Table.BASE,
         Key: createNoteBasePrimaryKey(input.noteId),
-        ...createUpdateExpression(this.createUpdatedNoteDynamoDbItem(input))
+        ...createUpdateExpression<NoteDynamoDbItem>(this.createUpdatedNoteDynamoDbItem(input))
     });
 
     private createNoteLabelAssociation = (input: WithDateNow<AddLabelToNoteInput>): TransactPutItem => ({

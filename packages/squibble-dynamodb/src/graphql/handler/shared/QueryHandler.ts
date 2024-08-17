@@ -38,13 +38,13 @@ export class QueryHandler implements ApiCallHandler<QueryRequestInput<DynamoDbIt
                 return this.createConnection(false, items, input.lastEvaluatedKeySupplier);
             }
             return this.createConnection(
-                this.hasNextPage(input.limit, items, lastEvaluatedKey),
+                this.hasNextPage<T>(input.limit, items, lastEvaluatedKey),
                 items.slice(0, input.limit),
                 input.lastEvaluatedKeySupplier
             );
         } catch (error) {
             if (error instanceof ItemsNotFoundException) {
-                return this.createEmptyConnection();
+                return this.createEmptyConnection<T>();
             }
             throw error;
         }
