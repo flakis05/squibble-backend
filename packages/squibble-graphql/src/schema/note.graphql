@@ -103,7 +103,7 @@ type UnArchiveNoteOutput {
 type Query {
     note(noteId: ID!): Note
     notes(first: Int!, after: String, sort: SortNotes!): NoteConnection!
-    archives(first: Int!, after: String, sort: SortNotes!): NoteConnection!
+    archivedNotes(first: Int!, after: String, sort: SortNotes!): NoteConnection!
     deletedNotes(first: Int!, after: String, sort: SortDeletedNotes!): NoteConnection!
 }
 

@@ -67,7 +67,7 @@ import { getApolloContext } from './graphql/context/ApolloContext';
 import DataLoader from 'dataloader';
 import { GetLabelDataLoader } from './graphql/dataloader/GetLabelDataLoader';
 import { GetLabelsResolver } from './graphql/resolver/label/GetLabelsResolver';
-import { GetArchivesResolver } from './graphql/resolver/note/GetArchivesResolver';
+import { GetArchivedNotesResolver } from './graphql/resolver/note/GetArchivedNotesResolver';
 import { GetDeletedNotesHandler } from './graphql/handler/note/GetDeletedNotesHandler';
 import { GetDeletedNotesResolver } from './graphql/resolver/note/GetDeletedNotesResolver';
 
@@ -101,7 +101,7 @@ const deleteLabelHandler = new DeleteLabelHandler(clientWrapper);
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
 const getLabelsResolver = new GetLabelsResolver();
 const getNotesResolver = new GetNotesResolver(getNotesHandler);
-const getArchivesResolver = new GetArchivesResolver(getNotesHandler);
+const getArchivedNotesResolver = new GetArchivedNotesResolver(getNotesHandler);
 const getDeletedNotesResolver = new GetDeletedNotesResolver(getDeletedNotesHandler);
 
 const createNoteMutationCall = new CreateNoteMutationCall(createNoteHandler);
@@ -134,7 +134,7 @@ const resolvers = {
     Query: {
         note: getNoteResolver.resolve,
         notes: getNotesResolver.resolve,
-        archives: getArchivesResolver.resolve,
+        archivedNotes: getArchivedNotesResolver.resolve,
         deletedNotes: getDeletedNotesResolver.resolve
     },
     Mutation: {
