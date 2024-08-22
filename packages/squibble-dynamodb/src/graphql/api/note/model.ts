@@ -20,18 +20,20 @@ export interface GetNoteOutput {
     note: NoteEntity;
 }
 
-type GetNotesInputBase = NoteId & {
+interface ConnectionInput {
     limit: number;
     after?: string;
-    sort: SortNotes;
-    status: NoteStatus;
-};
-export type GetNotesInput = GetNotesInputBase & {
-    status: Extract<NoteStatus, 'active' | 'archived'>;
-};
-export type GetDeletedNotesInput = Omit<GetNotesInputBase, 'sort' | 'status'> & {
-    sort: SortDeletedNotes;
-};
+}
+
+export type GetNotesInput = NoteId &
+    ConnectionInput & {
+        sort: SortNotes;
+        status: Extract<NoteStatus, 'active' | 'archived'>;
+    };
+export type GetDeletedNotesInput = NoteId &
+    ConnectionInput & {
+        sort: SortDeletedNotes;
+    };
 export type GetNotesOutput = Connection<NoteEntity>;
 
 export type CreateNoteInput = Omit<NoteData, 'labels'> & {
