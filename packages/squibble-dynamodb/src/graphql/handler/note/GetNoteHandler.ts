@@ -13,6 +13,7 @@ import { ApiCallHandler } from '../ApiCallHandler';
 import { LabelEntity } from '../../api/label/model';
 import { BatchGetItem, BatchInput, BatchInputBuilder } from '../../../dynamodb/wrapper/model/BatchInput';
 import { BatchGetOutput } from '../../../dynamodb/wrapper/model/BatchGetOutput';
+import { NotFoundException } from '../../exception/NotFoundException';
 
 export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutput> {
     private client: DynamoDBClientWrapper;
@@ -21,15 +22,38 @@ export class GetNoteHandler implements ApiCallHandler<GetNoteInput, GetNoteOutpu
         this.client = client;
         this.advancedClient = advancedClient;
     }
-    //[TODO]: Handle the case when this.getLabels fails to get some labels
+    //[TODO]: Handle the case when this.resolveNoteLabels fails to get some labels
     public handle = async (input: GetNoteInput): Promise<GetNoteOutput> => {
         const key = createNoteBasePrimaryKey(input.noteId);
         const { item } = await this.client.get<NoteDynamoDbItem>(key);
+        this.verifyStatusOfNote(item, input);
         const entity = fromDynamoDbItemToNoteEntity(item);
         await this.resolveNoteLabels(entity, item);
         return {
             note: entity
         };
+    };
+
+    private verifyStatusOfNote = (item: NoteDynamoDbItem, input: GetNoteInput) => {
+        if (input.status == 'active' && !this.isActive(item)) {
+            throw new NotFoundException('Entity not found');
+        } else if (input.status == 'archived' && !this.isArchived(item)) {
+            throw new NotFoundException('Entity not found');
+        } else if (input.status == 'deleted' && !this.isDeleted(item)) {
+            throw new NotFoundException('Entity not found');
+        }
+    };
+
+    private isArchived = (item: NoteDynamoDbItem) => {
+        return item.archivedAt !== undefined;
+    };
+
+    private isDeleted = (item: NoteDynamoDbItem) => {
+        return item.deletedAt !== undefined;
+    };
+
+    private isActive = (item: NoteDynamoDbItem) => {
+        return !this.isArchived(item) && !this.isDeleted(item);
     };
 
     private getLabelDynamoDbItems = async (overrideLabels: LabelsAttributeValue): Promise<BatchGetOutput> => {

@@ -2,7 +2,7 @@ import { Resolver } from '../../../apollo/Resolver';
 import { NoteEntity, GetNoteInput, GetNoteOutput } from '../../api/note/model';
 import { ApiCallHandler } from '../../handler/ApiCallHandler';
 
-export class GetNoteResolver implements Resolver<NoteEntity> {
+export class GetDeletedNoteResolver implements Resolver<NoteEntity> {
     private handler: ApiCallHandler<GetNoteInput, GetNoteOutput>;
 
     constructor(handler: ApiCallHandler<GetNoteInput, GetNoteOutput>) {
@@ -12,7 +12,7 @@ export class GetNoteResolver implements Resolver<NoteEntity> {
     public resolve = async (_: any, args: any): Promise<NoteEntity> => {
         const input: GetNoteInput = {
             noteId: args.noteId,
-            status: 'active'
+            status: 'deleted'
         };
         const output: GetNoteOutput = await this.handler.handle(input);
         return output.note;

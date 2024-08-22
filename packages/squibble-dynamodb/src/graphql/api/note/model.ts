@@ -13,25 +13,25 @@ interface NoteData {
 
 export type NoteEntity = NoteId & CreatedModifiedAt & DeletedAt & ArchivedAt & NoteData;
 
-export type GetNoteInput = NoteId;
+export type GetNoteInput = NoteId & {
+    status: NoteStatus;
+};
 export interface GetNoteOutput {
     note: NoteEntity;
 }
+
 type GetNotesInputBase = NoteId & {
     limit: number;
     after?: string;
     sort: SortNotes;
     status: NoteStatus;
 };
-
 export type GetNotesInput = GetNotesInputBase & {
     status: Extract<NoteStatus, 'active' | 'archived'>;
 };
-
 export type GetDeletedNotesInput = Omit<GetNotesInputBase, 'sort' | 'status'> & {
     sort: SortDeletedNotes;
 };
-
 export type GetNotesOutput = Connection<NoteEntity>;
 
 export type CreateNoteInput = Omit<NoteData, 'labels'> & {

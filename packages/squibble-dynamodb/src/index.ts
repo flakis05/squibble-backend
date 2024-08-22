@@ -70,6 +70,8 @@ import { GetLabelsResolver } from './graphql/resolver/label/GetLabelsResolver';
 import { GetArchivedNotesResolver } from './graphql/resolver/note/GetArchivedNotesResolver';
 import { GetDeletedNotesHandler } from './graphql/handler/note/GetDeletedNotesHandler';
 import { GetDeletedNotesResolver } from './graphql/resolver/note/GetDeletedNotesResolver';
+import { GetArchivedNoteResolver } from './graphql/resolver/note/GetArchivedNoteResolver';
+import { GetDeletedNoteResolver } from './graphql/resolver/note/GetDeletedNoteResolver';
 
 const typeDefs = fs.readFileSync('generated/schema/merged.graphql', 'utf8');
 
@@ -99,6 +101,8 @@ const updateLabelHandler = new UpdateLabelHandler(clientWrapper);
 const deleteLabelHandler = new DeleteLabelHandler(clientWrapper);
 
 const getNoteResolver = new GetNoteResolver(getNoteHandler);
+const getArchivedNoteResolver = new GetArchivedNoteResolver(getNoteHandler);
+const getDeletedNoteResolver = new GetDeletedNoteResolver(getNoteHandler);
 const getLabelsResolver = new GetLabelsResolver();
 const getNotesResolver = new GetNotesResolver(getNotesHandler);
 const getArchivedNotesResolver = new GetArchivedNotesResolver(getNotesHandler);
@@ -133,6 +137,8 @@ const deleteLabelMutationResolver = new MutationResolver<DeleteLabelInput, Delet
 const resolvers = {
     Query: {
         note: getNoteResolver.resolve,
+        archivedNote: getArchivedNoteResolver.resolve,
+        deletedNote: getDeletedNoteResolver.resolve,
         notes: getNotesResolver.resolve,
         archivedNotes: getArchivedNotesResolver.resolve,
         deletedNotes: getDeletedNotesResolver.resolve
